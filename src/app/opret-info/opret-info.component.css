@@ -1,0 +1,20 @@
+:host {
+    display: flex;
+    justify-content: center;
+}
+
+.info-panel {
+    width: 1024px;
+    margin: auto auto 0 auto;
+    /*  background-color: chartreuse; */
+}
+
+.info-panel form {
+    display: flex;
+    flex-direction: column;
+}
+
+.progress-bar {
+    margin: 10px;
+    width: 300px;
+}

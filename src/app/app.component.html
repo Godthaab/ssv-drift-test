@@ -1,0 +1,43 @@
+<mat-sidenav-container fullscreen>
+
+  <mat-sidenav #start (click)="start.close()">
+    <mat-nav-list>
+
+      <a mat-list-item routerLink="login" *ngIf="user.isLoggedOut$ | async">
+        <mat-icon>account_circle</mat-icon>
+        <span>Log ind</span>
+      </a>
+
+      <a mat-list-item *ngIf="user.isLoggedIn$ | async" (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        <span>Log ud</span>
+      </a>
+
+    </mat-nav-list>
+
+  </mat-sidenav>
+
+  <mat-toolbar color="primary">
+
+    <div class="toolbar-tools">
+
+      <button mat-icon-button (click)="start.open('mouse')">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <div class="filler"></div>
+
+      <ng-container *ngIf="(user.pictureUrl$ | async) as pictureUrl">
+
+        <img class="user-avatar" [src]="pictureUrl">
+
+      </ng-container>
+
+    </div>
+
+
+  </mat-toolbar>
+
+  <router-outlet></router-outlet>
+
+</mat-sidenav-container>

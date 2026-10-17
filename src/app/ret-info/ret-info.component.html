@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>Opdater info</h2>
+
+<mat-dialog-content [formGroup]="form">
+
+    <mat-form-field>
+        <input matInput placeholder="Overskrift" formControlName="overskrift">
+    </mat-form-field>
+
+    <mat-form-field>
+        <textarea matInput placeholder="Beskrivelse" formControlName="beskrivelse">
+        </textarea>
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput placeholder="Berørte" formControlName="berorte">
+    </mat-form-field>
+    <!-- Publiceres -->
+    <div style="font-weight:500; color: rgb(22, 149, 22); text-align: center;">Oprettet den: {{
+        driftsinfo.publiceres?.toDate() | date:
+        'dd-MM-yyyy HH:mm' }}
+    </div>
+    <mat-form-field>
+        <input matInput [ngxMatDatetimePicker]="pubPicker" placeholder="Vælg publicerings dato & tid"
+            formControlName="publiceres">
+        <mat-datepicker-toggle matSuffix [for]="pubPicker"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #pubPicker></ngx-mat-datetime-picker>
+    </mat-form-field>
+
+    <!-- Aftages -->
+    <div style="font-weight:500; color: rgb(22, 149, 22); text-align: center;">Aftages den: {{
+        driftsinfo.aftages?.toDate() | date:
+        'dd-MM-yyyy HH:mm' }}
+    </div>
+    <mat-form-field>
+        <input matInput [ngxMatDatetimePicker]="aftagesPicker" placeholder="Vælg slut dato & tid"
+            formControlName="aftages">
+        <mat-datepicker-toggle matSuffix [for]="aftagesPicker"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #aftagesPicker></ngx-mat-datetime-picker>
+    </mat-form-field>
+
+    <p role="alert" *ngIf="form.hasError('dateRange')">Aftagningstidspunktet skal ligge efter publiceringstidspunktet.</p>
+    <mat-slide-toggle class="promo" color="primary" formControlName="vises">
+        Vises på web
+    </mat-slide-toggle>
+    <p>Når slået til, vises meddelelsen kun i den valgte periode. Slå fra for at skjule den med det samme.</p>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+
+    <button mat-raised-button (click)="close()">
+        Luk
+    </button>
+
+    <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">
+        Opdater
+    </button>
+    <!-- <div style="margin-top:20px;"><span [innerHTML]="pubLokaltid"></span> = {{form.get('publiceres').value?.toLocaleString()}}</div>
+    <div><span [innerHTML]="aftagesLokaltid"></span> = {{form.get('aftages').value?.toLocaleString()}}</div> -->
+</mat-dialog-actions>

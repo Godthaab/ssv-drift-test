@@ -1,0 +1,45 @@
+27-09-2021 oprettet git git remote add origin https://github.com/Godthaab/ssv-driftsinfo.git
+
+27-07-2021
+Opdateret til v 12
+
+06-05-2021 oprettet ny brench Fase-2, som er lavet efter emuleringen og det meste logik er på plads. Mangler stadig væk timestamp problemet.
+
+-----------------
+Efter oprettelse af en Angular projekt:
+ng add @angular/material
+Hvis der skal bruges daop picker:
+npm install moment --save
+
+Angular uni logo:
+https://angular-academy.s3.amazonaws.com/main-logo/main-page-logo-small-hat.png
+
+Ego's billede på Google konto:
+https://lh3.googleusercontent.com/-Sge687UYkrQ/W7sXj_ICnrI/AAAAAAAAAPg/VqocgIA-UkEmla_xJKOGzrx-uGjHEaeMQCEwYBhgLKtQDAL1Ocqz-aeY4PjJ0ZaSYD50kZoJdQrAk5Xqtoa6VdW5bCX9alF44m8UFsmnf2FE4yvu9GcB14obXBIPIYLSWRl6B2IiszfxSdgSsk8Ivk0sa_Xa9qzyH363AdSwI4V0jEkkgGZVvzDioMf9DqhmEDPxwFbRzsFx49Zh60XJ-TtTs1bvweVWM_rv3Yc6CuOQsyOQSParmoTTWaSZ4xkjz5dlf-0MZW5VFd7YIac-FWKZ4NOh7D4S9hsLGsJfZ-B5kWt0hNasp_oxZLIoiU-NKqsAvRMvZFYaFmvGAeqw48ee8wzneJBBcWp8rlG7d68P_qEPe8WANMnj6N6McvSDRZhIpuHM7CwtFLGUvmY9hgBIYmF2s7vJbZaUhO1_qVVtuXjq1NjLzE65QzjEV_9kT8lpCVKr0tfFNnAJ9ZleH5IR36TMXNG18vokTul2t0YPdTiZXnqxng585XSj0rBBqRo89467YxeoFcjyE_jRy4lqPcoFzGRoSpTZApryzClAf4u6TomRrJomeDfuFzlDucgGuOTrjzWIhT-xcZc-avfHWGZDPcdwD5cB7d178oG6EqUce4WGt0LpdeB3CxQ-IhKx4gWvmz0GA-Cv2Bbpvtd_kCeWfMJKctIUG/w140-h140-p/Bo_San_Francisco.jpg
+
+
+Når Firebase er oprettet skal nedenstående installeres på den lokale maskines rod:
+sudo npm install -g firebase-tools
+
+Senere skal følgende udføres:
+firebase login
+firebase init
+firebase deploy
+
+Når test data skal uploades til Firestore så kør "About" og Populate Database
+07-04-2021
+Nu kører de to kategorier live og der er oprettet de to indexer i databasen.
+
+-------------------------------------
+Der er installeret en ny datapicker:
+npm install --save @angular-material-components/datetime-picker
+Og moment:
+npm install --save  @angular-material-components/moment-adapter
+
+Se eksempel:
+https://h2qutc.github.io/angular-material-components/datetimepicker
+
+Disse er indsat i opret-info
+-------------------------------------
+
+

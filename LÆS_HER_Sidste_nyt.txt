@@ -1,0 +1,6 @@
+06-10-2021  SSV-Drift er nu blevet renset for alt udnødigt stof fra AU.
+            Og mappen er omdøbt fra SSV-DRIFTSINFO til bare ssv-drift.
+            Oprettet en helt ny git mappe til den nye her.
+            Oprettet ny git og brugt ny metode for oprettelsen af gitten:
+
+---------

@@ -1,0 +1,53 @@
+<div class="info-panel">
+    <h1>Opret ny information</h1>
+
+    <form [formGroup]="form">
+        <!-- Overskrift -->
+        <mat-form-field appearance="outline">
+            <input placeholder="Overskrift" matInput formControlName="overskrift">
+        </mat-form-field>
+        <!-- Beskrivelse -->
+        <mat-form-field appearance="outline">
+            <textarea matInput placeholder="Beskrivelse" formControlName="beskrivelse"></textarea>
+        </mat-form-field>
+        <!-- Berørte -->
+        <mat-form-field appearance="outline">
+            <input placeholder="Berørte" matInput formControlName="berorte">
+        </mat-form-field>
+        <!-- Publiceres -->
+        <mat-form-field>
+            <input matInput [ngxMatDatetimePicker]="pubPicker" placeholder="Vælg publicerings dato & tid"
+                formControlName="publiceres">
+            <mat-datepicker-toggle matSuffix [for]="pubPicker"></mat-datepicker-toggle>
+            <ngx-mat-datetime-picker #pubPicker></ngx-mat-datetime-picker>
+        </mat-form-field>
+        <!-- Aftages -->
+        <mat-form-field>
+            <input matInput [ngxMatDatetimePicker]="aftagesPicker" placeholder="Vælg slut dato & tid"
+                formControlName="aftages">
+            <mat-datepicker-toggle matSuffix [for]="aftagesPicker"></mat-datepicker-toggle>
+            <ngx-mat-datetime-picker #aftagesPicker></ngx-mat-datetime-picker>
+        </mat-form-field>
+        <p role="alert" *ngIf="form.hasError('dateRange')">Aftagningstidspunktet skal ligge efter publiceringstidspunktet.</p>
+        <!-- Vises -->
+        <span class="example-list-section">
+            <mat-slide-toggle class="promo" color="primary" formControlName="vises">
+                Vises på web?
+            </mat-slide-toggle>
+        </span>
+        <p>Når slået til, vises meddelelsen kun i den valgte periode. Slå fra for at gemme den uden at vise den på hjemmesiden.</p>
+        <div>
+            <br>
+            <button mat-raised-button color="warn" [disabled]="!form.valid" (click)="onOpretInfo()">
+                Opret
+            </button><span style="padding-left:12px;">
+                <button mat-raised-button (click)="close()">
+                    fortryd
+                </button></span>
+        </div>
+
+    </form>
+
+    <!-- <div><span [innerHTML]="pubLokaltid"></span> = {{form.get('publiceres').value?.toLocaleString()}}</div>
+    <div><span [innerHTML]="aftagesLokaltid"></span> = {{form.get('aftages').value?.toLocaleString()}}</div> -->
+</div>

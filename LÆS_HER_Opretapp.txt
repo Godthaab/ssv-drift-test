@@ -1,0 +1,17 @@
+1. Start først :
+npm run emu
+npm start
+
+
+ng g c forside  --skip-tests
+ng g c driftsinfo --skip-tests
+ng g c driftsinfo-list --skip-tests
+
+ng g c opret-info --skip-tests -d
+Indsæt i route:
+  {
+    path: 'opret-info',
+    component: OpretInfoComponent,
+  },
+ng g c ret-info --skip-tests -d
+

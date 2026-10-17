@@ -1,0 +1,34 @@
+
+Husk at kikke i environment om det står rigtig til formålet
+fx hvordan   production: false, og useEmulators: false skal stå
+
+08-04-2021
+Færdigjort Emuleringen
+
+Udfør:
+Firebase init
+Og vælg
+-firestore
+- Function
+- Hosting storage
+- Emulators
+og tast ENTER
+
+
+Når projektet skal køres udføres to komandoer:
+1. npm start
+2. npm run emu Kør i nyt terminalvindue
+(3.) npm run emugem Hvis der skal gemmes data. Kør i nyt terminalvindue.
+
+Nedenstående er indsat som shotcut i package.json:
+Export driftsinfo:
+firebase emulators: export ssv-data
+Import driftsinfo:
+firebase emulators:start --only firestore --import ssv-data
+
+
+Udgiv live:
+
+ng build --configuration production
+firebase deploy
+

@@ -1,0 +1,4 @@
+Se:
+https://flutteragency.com/how-to-print-firestore-timestamp-as-formatted-date-and-time-in-flutter/
+
+Angular How to print timestamp as formated date and time
