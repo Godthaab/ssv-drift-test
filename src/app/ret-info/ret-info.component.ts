@@ -42,6 +42,8 @@ export class RetInfoComponent {
     private driftsinfoService: DriftsinfoService
   ) {
     this.driftsinfo = driftsinfo;
+    const originalStart = driftsinfo.publiceres?.toDate().getTime();
+    const originalEnd = driftsinfo.aftages?.toDate().getTime();
 
     this.form = this.fb.group({
       overskrift: [driftsinfo.overskrift, Validators.required],
@@ -50,7 +52,13 @@ export class RetInfoComponent {
       publiceres: [driftsinfo.publiceres?.toDate() ?? null, Validators.required],
       aftages: [driftsinfo.aftages?.toDate() ?? null, Validators.required],
       vises: [driftsinfo.vises],
-    }, { validators: driftsinfoDatesValidator });
+    }, { validators: form => {
+      const { publiceres, aftages } = form.value;
+      // Preserve legacy date ranges when only visibility or text is edited.
+      const datesUnchanged = publiceres instanceof Date && aftages instanceof Date &&
+        publiceres.getTime() === originalStart && aftages.getTime() === originalEnd;
+      return datesUnchanged ? null : driftsinfoDatesValidator(form);
+    } });
   }
 
   close(): void {

@@ -41,7 +41,8 @@ export class DriftsinfoListComponent implements OnInit {
 
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
-    dialogConfig.minWidth = '400px';
+    dialogConfig.width = '640px';
+    dialogConfig.maxWidth = 'calc(100vw - 32px)';
 
     dialogConfig.data = driftsinfo;
 

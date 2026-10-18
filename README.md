@@ -26,27 +26,47 @@ npm start
 Begge miljøfiler peger på den eksisterende Firebase-database. Ændringer i
 meddelelserne lokalt påvirker derfor også den offentlige hjemmeside.
 
-## Tidsstyrede driftsmeddelelser
+## Visning af driftsmeddelelser
 
-Fanerne beregnes ud fra `vises`, `publiceres` og `aftages`:
+Administrationsappen følger den udgivne app på `drift.stillinge-strands-vandv.dk`:
 
-- **Aktuelle:** »Vises på web« er slået til, og `publiceres <= nu < aftages`.
-- **Planlagte:** »Vises på web« er slået til, men publiceringstidspunktet er ikke nået.
-- **Tidligere:** perioden er udløbet, »Vises på web« er slået fra, eller datoerne mangler/er ugyldige.
+- **Aktuelle:** feltet `vises` er `true`.
+- **Tidligere:** feltet `vises` er `false`.
 
-Gamle meddelelser med passeret slutdato placeres automatisk under Tidligere,
-også selvom `vises` stadig er `true`. Der skal ikke rettes manuelt i hver
-meddelelse, og visningen ændrer eller sletter ikke dokumenter i Firebase.
-Slår man »Vises på web« fra, skjules meddelelsen straks fra Aktuelle/Planlagte.
+Begge lister sorteres efter `publiceres`, nyeste først, med samme Firestore-
+forespørgsler som den udgivne app. Datoerne flytter ikke meddelelser mellem
+fanerne. Gamle meddelelser, hvor »Vises på web« stadig er slået til, vises derfor
+under Aktuelle, også selvom aftagningsdatoen er passeret eller ligger før
+publiceringen. Visningen ændrer ikke dokumenter i databasen.
 
-Listerne følger Firestore-ændringer og kontrollerer tiden hvert sekund, så
-en åben side også skifter ved publicering/aftagning. Formularerne kræver,
-at aftagning ligger efter publicering. Tidsstempler sammenlignes som absolutte
-tidspunkter; indtastning og visning bruger browserens lokale tidszone.
+Gamle meddelelser kan redigeres og skjules manuelt med deres oprindelige
+datoer, også hvis datoerne ligger i forkert rækkefølge. Ved oprettelse eller
+ændring af datoerne kræves en aftagningsdato efter publiceringsdatoen.
 
-Samme tidsstyring findes i det tilhørende projekt `ssv-280225`. Begge apps
-skal bygges og udgives med rettelsen, før den virker i de offentlige udgaver.
-Build eller lokal udvikling udgiver ikke ændringerne.
+Listerne følger Firestore-ændringer, så ændringer fra andre sessioner også
+vises. Meddelelseskortene viser dato, overskrift, beskrivelse, berørte samt
+redigerings- og sletteikoner som i den udgivne app.
+
+## Udseende efter Angular 15-opgraderingen
+
+Den udgivne administrationsapp på `https://drift.stillinge-strands-vandv.dk`
+er den visuelle reference: blå værktøjslinje, lys baggrund, Roboto og runde
+ikonknapper til oprettelse, redigering og sletning. Typografi og komponenter
+bruger Materials legacy-udgaver for at bevare det oprindelige udseende.
+I Angular Material 15 kræver det `mat.all-legacy-component-typographies()`
+udover `legacy-core`.
+
+Roboto og Material Icons ligger i `src/assets/fonts`, i de samme versioner som
+den udgivne app. De indlæses lokalt, så skrift og ikoner også virker i editorens
+browser uden adgang til Google Fonts. Licenser og kildeadresser følger filerne.
+
+Datofelter viser og accepterer `dd-MM-yyyy HH:mm` i lokal tid, med danske månedsnavne og
+mandag som ugens første dag. Manuel indtastning kontrolleres, så dag og måned
+ikke byttes om, og ugyldige datoer afvises.
+
+Se ændringerne på **http://localhost:4201/**. Adressen
+`https://drift.stillinge-strands-vandv.dk` viser den senest udgivne version og
+ændres først ved en særskilt udgivelse.
 
 Hvis editoren viser TypeScript 6-fejl: åbn en `.ts`-fil, vælg
 `TypeScript: Select TypeScript Version` og derefter `Use Workspace Version` (4.8.4).
@@ -61,6 +81,22 @@ npm run build
 Produktionsfiler ligger i `dist/ssv-drift`. `src/assets/CNAME` bevarer adressen
 `drift.stillinge-strands-vandv.dk` ved senere udgivelse til GitHub Pages.
 Der udgives ikke automatisk ved build.
+
+## Udgivelse til den eksisterende administrationsside
+
+Kildekoden gemmes på `origin master` i `Godthaab/ssv-drift`. Den aktive
+GitHub Pages-side på `drift.stillinge-strands-vandv.dk` ligger fortsat på
+`gh-pages` i `Godthaab/ssv-drift-13Okt` (lokal remote: `backup`).
+Bevar denne hosting og domæneopsætning ved udgivelse:
+
+```bash
+npm run build
+npx --no-install angular-cli-ghpages --dir=dist/ssv-drift --repo=https://github.com/Godthaab/ssv-drift-13Okt.git --cname=drift.stillinge-strands-vandv.dk
+```
+
+Brug det kontrollerede produktionsbuild, og kontrollér efterfølgende login
+og visning på den offentlige adresse. Der skal ikke oprettes en ny Pages-side
+eller flyttes et domæne for at udgive fra dette kildeprojekt.
 
 Firestore bruger fortsat de publicerede regler i Firebase Console. Appens
 routebeskyttelse erstatter ikke databasens adgangsregler. Offentlig læsning og

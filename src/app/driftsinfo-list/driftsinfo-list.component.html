@@ -1,36 +1,17 @@
-
-    <div class="spinner-container" *ngIf="driftsinfos === null">
-        <mat-spinner></mat-spinner>
-    </div>
+<div class="spinner-container" *ngIf="driftsinfos === null">
+  <mat-spinner></mat-spinner>
+</div>
 <mat-card *ngFor="let driftsinfo of driftsinfos" class="driftsinfo-card mat-elevation-z7">
-   <p>Publiceres: {{driftsinfo.publiceres?.toDate() | date:'dd-MM-yyyy HH:mm'}}</p>
-   <p *ngIf="driftsinfo.aftages">Aftages: {{driftsinfo.aftages.toDate() | date:'dd-MM-yyyy HH:mm'}}</p>
-    <!-- <p><span style="font-weight: bold;"></span> {{driftsinfo.publiceres.toDate()}}</p> -->
-    <mat-card-title><span style="font-size: 90%;">{{ driftsinfo.overskrift }}</span></mat-card-title>
-    <mat-card-content>
-        {{ driftsinfo.beskrivelse }}
-    </mat-card-content>
-
-    <mat-card-content>
-        <span style="font-weight: bold;">Berørte:</span> {{driftsinfo.berorte}}
-    </mat-card-content>
-
-    <mat-card-actions class="driftsinfo-actions">
-
-<!--         <button mat-button class="mat-raised-button mat-primary" [routerLink]="['/driftsinfo', driftsinfo.url]">
-            Se alle
-        </button> -->
-
-        <ng-container>
-            <ng-container>
-                <button mat-button mat-mini-fab color="gron" class="mat-raised-button mat-accent" (click)="RetInfoComponent(driftsinfo)">
-                    <mat-icon>edit</mat-icon>
-                </button>&nbsp;
-                <button mat-mini-fab color="warn" (click)="vedSletInfo(driftsinfo)">
-                    <mat-icon>delete</mat-icon>
-                </button>
-            </ng-container>
-        </ng-container>
-
-    </mat-card-actions>
+  <p>{{driftsinfo.publiceres?.toDate() | date:'dd-MM-yyyy H:mm'}}</p>
+  <mat-card-title><span class="message-title">{{ driftsinfo.overskrift }}</span></mat-card-title>
+  <mat-card-content class="description">{{ driftsinfo.beskrivelse }}</mat-card-content>
+  <mat-card-content><strong>Berørte:</strong> {{driftsinfo.berorte}}</mat-card-content>
+  <mat-card-actions class="driftsinfo-actions">
+    <button mat-mini-fab class="edit-info-button" (click)="RetInfoComponent(driftsinfo)" [attr.aria-label]="'Rediger ' + driftsinfo.overskrift">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-mini-fab color="warn" (click)="vedSletInfo(driftsinfo)" [attr.aria-label]="'Slet ' + driftsinfo.overskrift">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-card-actions>
 </mat-card>

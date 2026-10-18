@@ -11,3 +11,8 @@ export interface Driftsinfo {
   aftages: Timestamp;
   /*  promoStartAt: Timestamp; */
 }
+
+export interface DriftsinfoCategories {
+  aktuelle: Driftsinfo[];
+  tidligere: Driftsinfo[];
+}

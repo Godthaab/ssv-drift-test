@@ -1,33 +1,18 @@
 <div class="info-panel">
-
-    <div class="header">
-        <h1 class="title">Driftsinformationer</h1>
-        <button mat-mini-fab color="accent" routerLink="/opret-info">
-            <mat-icon class="add-course-btn">add</mat-icon>
-        </button>
-    </div>
-    <p>Meddelelser vises fra publiceringstidspunktet indtil aftagningstidspunktet, når »Vises på web« er slået til.</p>
-    <mat-tab-group *ngIf="infos$ | async as infos; else loading">
-        <mat-tab label="Aktuelle">
-            <p *ngIf="!infos.aktuelle.length">Ingen aktuelle driftsmeddelelser.</p>
-            <app-driftsinfo-list [driftsinfos]="infos.aktuelle" (infoRettet)="reloadInfo()"
-             (infoSlettet)="reloadInfo()">
-            </app-driftsinfo-list>
-        </mat-tab>
-
-        <mat-tab label="Planlagte">
-            <p *ngIf="!infos.planlagte.length">Ingen planlagte driftsmeddelelser.</p>
-            <app-driftsinfo-list [driftsinfos]="infos.planlagte" (infoRettet)="reloadInfo()"
-             (infoSlettet)="reloadInfo()">
-            </app-driftsinfo-list>
-        </mat-tab>
-
-        <mat-tab label="Tidligere">
-            <p>Udløbne meddelelser og meddelelser med »Vises på web« slået fra. Meddelelser med manglende eller ugyldige datoer ligger også her.</p>
-            <app-driftsinfo-list [driftsinfos]="infos.tidligere" (infoRettet)="reloadInfo()"
-            (infoSlettet)="reloadInfo()">
-            </app-driftsinfo-list>
-        </mat-tab>
-    </mat-tab-group>
-    <ng-template #loading><mat-spinner></mat-spinner></ng-template>
+  <div class="header">
+    <h1 class="title">Driftsinformationer</h1>
+    <button mat-mini-fab color="accent" routerLink="/opret-info" aria-label="Opret driftsmeddelelse">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+  <mat-tab-group *ngIf="infos$ | async as infos; else loading">
+    <mat-tab label="Aktuelle">
+      <p *ngIf="!infos.aktuelle.length">Ingen aktuelle driftsmeddelelser.</p>
+      <app-driftsinfo-list [driftsinfos]="infos.aktuelle" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
+    </mat-tab>
+    <mat-tab label="Tidligere">
+      <app-driftsinfo-list [driftsinfos]="infos.tidligere" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
+    </mat-tab>
+  </mat-tab-group>
+  <ng-template #loading><mat-spinner></mat-spinner></ng-template>
 </div>

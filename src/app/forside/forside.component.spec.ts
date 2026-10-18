@@ -1,0 +1,20 @@
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { AppModule } from '../app.module';
+import { DriftsinfoService } from '../services/driftsinfo.service';
+import { ForsideComponent } from './forside.component';
+
+describe('Administration overview tabs', () => {
+  it('renders only Aktuelle and Tidligere, matching the published app', async () => {
+    await TestBed.configureTestingModule({
+      imports: [AppModule],
+      providers: [{ provide: DriftsinfoService, useValue: {
+        loadInfo: () => of({ aktuelle: [], tidligere: [] }),
+      } }],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(ForsideComponent);
+    fixture.detectChanges();
+    const tabs: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('[role="tab"]'));
+    expect(tabs.map(tab => tab.textContent.trim())).toEqual(['Aktuelle', 'Tidligere']);
+  });
+});

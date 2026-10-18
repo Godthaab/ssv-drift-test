@@ -30,12 +30,13 @@ import {LoginComponent} from './login/login.component';
 import {AppRoutingModule} from './app-routing.module';
 import { MatLegacySlideToggleModule as MatSlideToggleModule } from '@angular/material/legacy-slide-toggle';
 import {HttpClientModule} from '@angular/common/http';
-import {MatNativeDateModule} from '@angular/material/core';
+import {MatNativeDateModule, MAT_DATE_LOCALE} from '@angular/material/core';
 import { ForsideComponent } from './forside/forside.component';
 import { DriftsinfoListComponent } from './driftsinfo-list/driftsinfo-list.component';
 import { RetInfoComponent } from './ret-info/ret-info.component';
 import { OpretInfoComponent } from './opret-info/opret-info.component';
-import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
+import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule, NgxMatDateAdapter, NGX_MAT_DATE_FORMATS } from '@angular-material-components/datetime-picker';
+import { DanishDatetimeAdapter, DANISH_DATETIME_FORMATS } from './services/danish-datetime-adapter';
 
 @NgModule({
   declarations: [
@@ -81,7 +82,9 @@ import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerMod
     NgxMatNativeDateModule,
   ],
   providers: [
-
+    { provide: MAT_DATE_LOCALE, useValue: 'da-DK' },
+    { provide: NgxMatDateAdapter, useClass: DanishDatetimeAdapter },
+    { provide: NGX_MAT_DATE_FORMATS, useValue: DANISH_DATETIME_FORMATS },
   ],
   bootstrap: [AppComponent],
 })

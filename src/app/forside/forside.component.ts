@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DriftsinfoService } from './../services/driftsinfo.service';
-import { DriftsinfoCategories } from '../services/driftsinfo-status';
+import { DriftsinfoCategories } from '../model/driftsinfo';
 
 @Component({
   selector: 'app-forside',

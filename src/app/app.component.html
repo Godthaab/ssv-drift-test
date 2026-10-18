@@ -21,7 +21,7 @@
 
     <div class="toolbar-tools">
 
-      <button mat-icon-button (click)="start.open('mouse')">
+      <button mat-icon-button (click)="start.open('mouse')" aria-label="Åbn menu">
         <mat-icon>menu</mat-icon>
       </button>
 
@@ -29,7 +29,7 @@
 
       <ng-container *ngIf="(user.pictureUrl$ | async) as pictureUrl">
 
-        <img class="user-avatar" [src]="pictureUrl">
+        <img class="user-avatar" [src]="pictureUrl" alt="Brugerprofil">
 
       </ng-container>
 

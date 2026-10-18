@@ -1,30 +1,6 @@
-.course-card {
-    margin: 20px 10px;
-}
-
-.course-actions {
-    text-align: center;
-}
-
-mat-card-content {
-    font-size: 110%;
-}
-
-.mat-button.mat-gron, .mat-icon-button.mat-gron {
-    color: #0fb432;
-}
-.spinner-container {
-    height: 360px;
-    width: 390px;
-    position: fixed;
-}
-
-.lessons-table {
-    min-height: 360px;
-    margin-top: 10px;
-    background-color: aqua;
-}
-
-.spinner-container mat-spinner {
-    margin: 130px auto 0 auto;
-}
+mat-card-content { font-size: 110%; }
+.message-title { font-size: 90%; }
+.driftsinfo-card { overflow-wrap: anywhere; }
+.driftsinfo-actions { display: flex; gap: 8px; }
+.edit-info-button { color: #0fb432; background-color: white; }
+.spinner-container { display: flex; justify-content: center; padding: 32px 0; }

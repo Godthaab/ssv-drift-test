@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { from, Observable } from 'rxjs';
-import { Driftsinfo } from '../model/driftsinfo';
+import { combineLatest, from, Observable } from 'rxjs';
+import { Driftsinfo, DriftsinfoCategories } from '../model/driftsinfo';
 import { concatMap, map, shareReplay } from 'rxjs/operators';
 import { convertSnaps } from './db-utils';
-import { DriftsinfoCategories, watchDriftsinfo } from './driftsinfo-status';
 @Injectable({
   providedIn: 'root',
 })
@@ -12,9 +11,15 @@ export class DriftsinfoService {
   private readonly infos$: Observable<DriftsinfoCategories>;
 
   constructor(private db: AngularFirestore) {
-    this.infos$ = watchDriftsinfo(
-      this.db.collection<Driftsinfo>('driftsinfo').valueChanges({ idField: 'id' })
-    ).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    // Match the published administration app: the stored flag alone selects
+    // the tab, including legacy messages with old or reversed date ranges.
+    const loadCategory = (visible: boolean) => this.db.collection<Driftsinfo>(
+      'driftsinfo', ref => ref.where('vises', '==', visible).orderBy('publiceres', 'desc')
+    ).valueChanges({ idField: 'id' });
+    this.infos$ = combineLatest([loadCategory(true), loadCategory(false)]).pipe(
+      map(([aktuelle, tidligere]) => ({ aktuelle, tidligere })),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
   }
 
   // tslint:disable-next-line:typedef

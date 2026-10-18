@@ -47,6 +47,7 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
     expect(fixture.componentInstance.form.valid).toBeTrue();
     const input: HTMLInputElement = fixture.nativeElement.querySelector('[formControlName="publiceres"]');
     expect(input.value).not.toBe('');
+    expect(input.value).toBe('16-10-2026 14:35');
   });
 
   it('preserves the instant and Firestore Timestamp type when saving an edited date', () => {
@@ -61,6 +62,22 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
     expect(data.publiceres.toDate()).toEqual(changed);
     expect(data.aftages.toDate()).toEqual(removed);
     expect(dialog.close).toHaveBeenCalledWith(data);
+  });
+
+  it('accepts a manually entered Danish date and rejects an impossible one in the real input', () => {
+    const fixture = TestBed.createComponent(RetInfoComponent);
+    fixture.detectChanges();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('[formControlName="publiceres"]');
+    input.value = '04-10-2026 14:35';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.form.value.publiceres).toEqual(new Date(2026, 9, 4, 14, 35));
+    expect(fixture.componentInstance.form.valid).toBeTrue();
+    input.value = '31-02-2026 10:00';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.form.valid).toBeFalse();
+    expect(service.opdaterInfo).not.toHaveBeenCalled();
   });
 
   it('does not submit an invalid edit', () => {
@@ -93,6 +110,36 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
       publiceres: published, aftages: removed,
     });
     expect(create.form.valid).toBeTrue();
+  });
+
+  it('allows manually hiding and re-enabling a legacy message without changing its reversed dates', () => {
+    const legacy = { ...record, publiceres: record.aftages, aftages: record.publiceres };
+    TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, { useValue: legacy });
+    const fixture = TestBed.createComponent(RetInfoComponent);
+    fixture.detectChanges();
+    const edit = fixture.componentInstance;
+    for (const visible of [false, true]) {
+      edit.form.patchValue({ vises: visible });
+      expect(edit.form.valid).toBeTrue();
+      edit.save();
+      const [id, data] = service.opdaterInfo.calls.mostRecent().args;
+      expect(id).toBe(legacy.id);
+      expect(data.vises).toBe(visible);
+      expect(data.publiceres.toDate()).toEqual(removed);
+      expect(data.aftages.toDate()).toEqual(published);
+    }
+  });
+
+  it('requires a valid range when the dates of a legacy message are changed', () => {
+    const legacy = { ...record, publiceres: record.aftages, aftages: record.publiceres };
+    TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, { useValue: legacy });
+    const edit = TestBed.createComponent(RetInfoComponent).componentInstance;
+    edit.form.patchValue({ aftages: new Date(2026, 9, 17, 14, 35) });
+    expect(edit.form.hasError('dateRange')).toBeTrue();
+    edit.save();
+    expect(service.opdaterInfo).not.toHaveBeenCalled();
+    edit.form.patchValue({ aftages: new Date(2026, 10, 2, 14, 35) });
+    expect(edit.form.valid).toBeTrue();
   });
 
   it('creates the same Firestore data shape expected by the public website', () => {

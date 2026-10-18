@@ -5,6 +5,7 @@
 
 .header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
 }
@@ -12,4 +13,8 @@
 .title {
     text-align: center;
     margin-right: 15px;
+}
+
+@media (max-width: 600px) {
+    .info-panel { margin: 20px 12px 0; }
 }
