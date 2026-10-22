@@ -6,13 +6,16 @@ export interface Driftsinfo {
   overskrift: string;
   beskrivelse: string;
   berorte: string;
-  vises: boolean;
+  // Legacy compatibility: computed on saves for clients that still query it.
+  vises?: boolean;
+  visAltid?: boolean;
   publiceres: Timestamp;
-  aftages: Timestamp;
+  aftages: Timestamp | null;
   /*  promoStartAt: Timestamp; */
 }
 
 export interface DriftsinfoCategories {
   aktuelle: Driftsinfo[];
+  planlagte: Driftsinfo[];
   tidligere: Driftsinfo[];
 }

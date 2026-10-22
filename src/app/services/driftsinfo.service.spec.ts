@@ -1,4 +1,5 @@
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import firebase from 'firebase/compat/app';
@@ -6,7 +7,7 @@ import 'firebase/compat/firestore';
 import { Driftsinfo, DriftsinfoCategories } from '../model/driftsinfo';
 import { DriftsinfoService } from './driftsinfo.service';
 
-describe('Driftsinformation matching the published administration app', () => {
+describe('Permanent and scheduled posts in the administration', () => {
   const timestamp = (date: string) => firebase.firestore.Timestamp.fromDate(new Date(date));
   const hardness: Driftsinfo = {
     id: 'hardness', infoNr: 2, overskrift: 'Vandets hårdhed', beskrivelse: 'Test', berorte: 'Alle',
@@ -26,14 +27,9 @@ describe('Driftsinformation matching the published administration app', () => {
     // Execute the configured queries against local records; no Firebase connection.
     const db = {
       collection: (_name: string, query: (ref: any) => any) => {
-        const filters: Array<(info: Driftsinfo) => boolean> = [];
         let sortField: string;
         let direction: string;
         const ref = {
-          where: (field: string, _operator: string, value: boolean) => {
-            filters.push(info => info[field] === value);
-            return ref;
-          },
           orderBy: (field: string, order: string) => {
             sortField = field;
             direction = order;
@@ -42,41 +38,47 @@ describe('Driftsinformation matching the published administration app', () => {
         };
         query(ref);
         return { valueChanges: () => source.pipe(map(infos => infos
-          .filter(info => filters.every(filter => filter(info)) && sortField in info)
+          .filter(info => sortField in info)
           .sort((a, b) => (a[sortField].toMillis() - b[sortField].toMillis()) * (direction === 'desc' ? -1 : 1)))) };
       },
     };
     service = new DriftsinfoService(db as unknown as AngularFirestore);
   });
 
-  it('keeps the two live current messages current despite expired or reversed dates', () => {
+  it('keeps legacy posts current despite expired or reversed dates', fakeAsync(() => {
     source.next([meters, { ...hardness, id: 'hidden', vises: false }, hardness]);
     let groups: DriftsinfoCategories;
     const subscription = service.loadInfo().subscribe(value => groups = value);
+    tick(0);
     expect(groups.aktuelle.map(info => info.overskrift)).toEqual(['Vandets hårdhed', 'Elektroniske Vandmålere']);
     expect(groups.tidligere.map(info => info.id)).toEqual(['hidden']);
     subscription.unsubscribe();
-  });
+  }));
 
-  it('uses only the stored boolean flag, including enabled future publications', () => {
+  it('loads new posts without vises while preserving unedited legacy posts', fakeAsync(() => {
+    spyOn(Date, 'now').and.returnValue(Date.parse('2026-10-19T10:00:00+02:00'));
     const future = { ...hardness, id: 'future', publiceres: timestamp('2030-01-01T10:00:00+01:00') };
-    const missingFlag = { ...hardness, id: 'missing', vises: undefined };
+    const missingFlag = { ...hardness, id: 'new', vises: undefined, visAltid: false,
+      publiceres: timestamp('2026-10-19T09:00:00+02:00'), aftages: timestamp('2026-10-19T12:00:00+02:00') };
     source.next([hardness, missingFlag, future]);
-    const subscription = service.loadInfo().subscribe(groups => {
-      expect(groups.aktuelle).toEqual([future, hardness]);
-      expect(groups.tidligere).toEqual([]);
-      expect(Object.keys(groups).sort()).toEqual(['aktuelle', 'tidligere']);
-    });
+    let groups: DriftsinfoCategories;
+    const subscription = service.loadInfo().subscribe(value => groups = value);
+    tick(0);
+    expect(groups.aktuelle).toEqual([future, missingFlag, hardness]);
+    expect(groups.tidligere).toEqual([]);
+    expect(groups.planlagte).toEqual([]);
+    expect(hardness.visAltid).toBeUndefined();
     subscription.unsubscribe();
-  });
+  }));
 
-  it('shares listeners and moves edited messages between the two tabs', () => {
+  it('shares listeners and moves edited messages between the tabs', fakeAsync(() => {
     source.next([hardness]);
     let first: DriftsinfoCategories;
     let second: DriftsinfoCategories;
     const a = service.loadInfo().subscribe(value => first = value);
     const b = service.loadInfo().subscribe(value => second = value);
-    expect(source.observers.length).toBe(2);
+    tick(0);
+    expect(source.observers.length).toBe(1);
     const hidden = { ...hardness, vises: false };
     source.next([hidden]);
     expect(first.aktuelle).toEqual([]);
@@ -85,5 +87,27 @@ describe('Driftsinformation matching the published administration app', () => {
     a.unsubscribe();
     b.unsubscribe();
     expect(source.observers.length).toBe(0);
-  });
+  }));
+
+  it('schedules an explicitly timed post and expires it while the overview is open', fakeAsync(() => {
+    const start = timestamp('2026-10-18T10:00:00+02:00');
+    const end = timestamp('2026-10-18T12:00:00+02:00');
+    let now = start.toMillis() - 1000;
+    spyOn(Date, 'now').and.callFake(() => now);
+    const timed = { ...hardness, id: 'timed', vises: undefined, visAltid: false, publiceres: start, aftages: end };
+    source.next([hardness, timed]);
+    let groups: DriftsinfoCategories;
+    const subscription = service.loadInfo().subscribe(value => groups = value);
+    tick(0);
+    expect(groups.aktuelle).toEqual([hardness]);
+    expect(groups.planlagte).toEqual([timed]);
+    now = start.toMillis();
+    tick(1000);
+    expect(groups.aktuelle).toEqual([timed, hardness]);
+    now = end.toMillis();
+    tick(1000);
+    expect(groups.aktuelle).toEqual([hardness]);
+    expect(groups.tidligere).toEqual([timed]);
+    subscription.unsubscribe();
+  }));
 });

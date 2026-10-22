@@ -1,8 +1,10 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Driftsinfo } from '../model/driftsinfo';
-import { driftsinfoDatesValidator } from '../services/driftsinfo-dates.validator';
+import { bindDriftsinfoExpiry, driftsinfoDatesValidator } from '../services/driftsinfo-dates.validator';
+import { Subscription } from 'rxjs';
+import { isAlwaysVisible } from '../services/driftsinfo-status';
 import { DriftsinfoService } from '../services/driftsinfo.service';
 import * as moment from 'moment';
 import { ThemePalette } from '@angular/material/core';
@@ -14,8 +16,9 @@ import 'firebase/compat/firestore';
   templateUrl: './ret-info.component.html',
   styleUrls: ['./ret-info.component.css'],
 })
-export class RetInfoComponent {
+export class RetInfoComponent implements OnDestroy {
   form: UntypedFormGroup;
+  private readonly expirySubscription: Subscription;
   /* For indsættelse af Dato */
   @ViewChild('picker') picker: any;
   public pubLokaltid = `formGroup.get('publiceres').value?.toLocaleString()`;
@@ -42,23 +45,20 @@ export class RetInfoComponent {
     private driftsinfoService: DriftsinfoService
   ) {
     this.driftsinfo = driftsinfo;
-    const originalStart = driftsinfo.publiceres?.toDate().getTime();
-    const originalEnd = driftsinfo.aftages?.toDate().getTime();
 
     this.form = this.fb.group({
       overskrift: [driftsinfo.overskrift, Validators.required],
       beskrivelse: [driftsinfo.beskrivelse, Validators.required],
       berorte: [driftsinfo.berorte, Validators.required],
       publiceres: [driftsinfo.publiceres?.toDate() ?? null, Validators.required],
-      aftages: [driftsinfo.aftages?.toDate() ?? null, Validators.required],
-      vises: [driftsinfo.vises],
-    }, { validators: form => {
-      const { publiceres, aftages } = form.value;
-      // Preserve legacy date ranges when only visibility or text is edited.
-      const datesUnchanged = publiceres instanceof Date && aftages instanceof Date &&
-        publiceres.getTime() === originalStart && aftages.getTime() === originalEnd;
-      return datesUnchanged ? null : driftsinfoDatesValidator(form);
-    } });
+      aftages: [driftsinfo.aftages?.toDate() ?? null],
+      visAltid: [isAlwaysVisible(driftsinfo)],
+    }, { validators: driftsinfoDatesValidator });
+    this.expirySubscription = bindDriftsinfoExpiry(this.form);
+  }
+
+  ngOnDestroy(): void {
+    this.expirySubscription.unsubscribe();
   }
 
   close(): void {
@@ -70,10 +70,11 @@ export class RetInfoComponent {
       this.form.markAllAsTouched();
       return;
     }
+    const value = this.form.getRawValue();
     const changes = {
-      ...this.form.value,
-      publiceres: firebase.firestore.Timestamp.fromDate(this.form.value.publiceres),
-      aftages: firebase.firestore.Timestamp.fromDate(this.form.value.aftages),
+      ...value,
+      publiceres: firebase.firestore.Timestamp.fromDate(value.publiceres),
+      aftages: value.aftages ? firebase.firestore.Timestamp.fromDate(value.aftages) : null,
     };
 
     this.driftsinfoService

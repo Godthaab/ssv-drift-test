@@ -1,15 +1,15 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { catchError, concatMap, last, map, take, tap } from 'rxjs/operators';
-import { from, Observable, throwError } from 'rxjs';
+import { from, Observable, Subscription, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import firebase from 'firebase/compat/app';
 import Timestamp = firebase.firestore.Timestamp;
 import { DriftsinfoService } from '../services/driftsinfo.service';
 import { Driftsinfo } from '../model/driftsinfo';
-import { driftsinfoDatesValidator } from '../services/driftsinfo-dates.validator';
+import { bindDriftsinfoExpiry, driftsinfoDatesValidator } from '../services/driftsinfo-dates.validator';
 import * as moment from 'moment';
 import { ThemePalette } from '@angular/material/core';
 
@@ -18,8 +18,9 @@ import { ThemePalette } from '@angular/material/core';
   templateUrl: './opret-info.component.html',
   styleUrls: ['./opret-info.component.css'],
 })
-export class OpretInfoComponent implements OnInit {
+export class OpretInfoComponent implements OnInit, OnDestroy {
   infoId: string;
+  private readonly expirySubscription: Subscription;
   /* For indsættelse af Dato */
   @ViewChild('picker') picker: any;
   public pubLokaltid = `formGroup.get('publiceres').value?.toLocaleString()`;
@@ -42,9 +43,9 @@ export class OpretInfoComponent implements OnInit {
     overskrift: ['', Validators.required],
     beskrivelse: ['', Validators.required],
     berorte: ['', Validators.required],
-    vises: [true],
+    visAltid: [false],
     publiceres: [null, Validators.required],
-    aftages: [null, Validators.required],
+    aftages: [null],
   }, { validators: driftsinfoDatesValidator });
 
   constructor(
@@ -52,7 +53,13 @@ export class OpretInfoComponent implements OnInit {
     private driftsinfoService: DriftsinfoService,
     private afs: AngularFirestore,
     private router: Router
-  ) {}
+  ) {
+    this.expirySubscription = bindDriftsinfoExpiry(this.form);
+  }
+
+  ngOnDestroy(): void {
+    this.expirySubscription.unsubscribe();
+  }
 
   ngOnInit(): void {
     this.infoId = this.afs.createId();
@@ -64,7 +71,7 @@ export class OpretInfoComponent implements OnInit {
       this.form.markAllAsTouched();
       return;
     }
-    const val = this.form.value;
+    const val = this.form.getRawValue();
 
     const nyInfo: Partial<Driftsinfo> = {
       overskrift: val.overskrift,
@@ -72,11 +79,11 @@ export class OpretInfoComponent implements OnInit {
       publiceres: val.publiceres,
       aftages: val.aftages,
       berorte: val.berorte,
-      vises: val.vises,
+      visAltid: val.visAltid,
     };
 
     nyInfo.publiceres = Timestamp.fromDate(this.form.value.publiceres);
-    nyInfo.aftages = Timestamp.fromDate(this.form.value.aftages);
+    nyInfo.aftages = val.aftages ? Timestamp.fromDate(val.aftages) : null;
     console.log('nyInfo.aftages: ', nyInfo.aftages);
     this.driftsinfoService
       .createCourse(nyInfo, this.infoId)

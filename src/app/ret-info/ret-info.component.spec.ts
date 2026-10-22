@@ -16,7 +16,7 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
   const removed = new Date(2026, 10, 1, 23, 5);
   const record = {
     id: 'test-info', infoNr: 1, overskrift: 'Test', beskrivelse: 'Testbesked',
-    berorte: 'Alle', vises: true,
+    berorte: 'Alle', vises: true, visAltid: false,
     publiceres: firebase.firestore.Timestamp.fromDate(published),
     aftages: firebase.firestore.Timestamp.fromDate(removed),
   };
@@ -95,7 +95,7 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
     expect(service.opdaterInfo).not.toHaveBeenCalled();
     const create = TestBed.createComponent(OpretInfoComponent).componentInstance;
     create.form.setValue({
-      overskrift: 'Test', beskrivelse: 'Testbesked', berorte: 'Alle', vises: true,
+      overskrift: 'Test', beskrivelse: 'Testbesked', berorte: 'Alle', visAltid: false,
       publiceres: removed, aftages: published,
     });
     expect(create.form.hasError('dateRange')).toBeTrue();
@@ -103,38 +103,54 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
     expect(service.createCourse).not.toHaveBeenCalled();
   });
 
-  it('allows creating a manually hidden message with valid dates', () => {
+  it('offers only the permanent-post switch when creating a post', () => {
     const create = TestBed.createComponent(OpretInfoComponent).componentInstance;
     create.form.setValue({
-      overskrift: 'Test', beskrivelse: 'Testbesked', berorte: 'Alle', vises: false,
+      overskrift: 'Test', beskrivelse: 'Testbesked', berorte: 'Alle', visAltid: false,
       publiceres: published, aftages: removed,
     });
     expect(create.form.valid).toBeTrue();
+    expect(create.form.get('vises')).toBeNull();
   });
 
-  it('allows manually hiding and re-enabling a legacy message without changing its reversed dates', () => {
-    const legacy = { ...record, publiceres: record.aftages, aftages: record.publiceres };
+  it('edits a legacy fixed post without exposing or saving the obsolete visibility switch', () => {
+    const legacy = { ...record, visAltid: undefined, publiceres: record.aftages, aftages: record.publiceres };
     TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, { useValue: legacy });
     const fixture = TestBed.createComponent(RetInfoComponent);
     fixture.detectChanges();
     const edit = fixture.componentInstance;
-    for (const visible of [false, true]) {
-      edit.form.patchValue({ vises: visible });
-      expect(edit.form.valid).toBeTrue();
-      edit.save();
-      const [id, data] = service.opdaterInfo.calls.mostRecent().args;
-      expect(id).toBe(legacy.id);
-      expect(data.vises).toBe(visible);
-      expect(data.publiceres.toDate()).toEqual(removed);
-      expect(data.aftages.toDate()).toEqual(published);
-    }
+    expect(edit.form.get('vises')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[formControlName="vises"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('[formControlName="visAltid"]')).not.toBeNull();
+    edit.form.patchValue({ beskrivelse: 'Ændret tekst' });
+    expect(edit.form.valid).toBeTrue();
+    edit.save();
+    const [id, data] = service.opdaterInfo.calls.mostRecent().args;
+    expect(id).toBe(legacy.id);
+    expect('vises' in data).toBeFalse();
+    expect(data.visAltid).toBeTrue();
+    expect(data.publiceres.toDate()).toEqual(removed);
+    expect(data.aftages.toDate()).toEqual(published);
   });
 
-  it('requires a valid range when the dates of a legacy message are changed', () => {
-    const legacy = { ...record, publiceres: record.aftages, aftages: record.publiceres };
+  it('opens a legacy archived post with the permanent-post choice off', () => {
+    TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, {
+      useValue: { ...record, visAltid: undefined, vises: false },
+    });
+    const edit = TestBed.createComponent(RetInfoComponent).componentInstance;
+    expect(edit.form.value.visAltid).toBeFalse();
+    expect(edit.form.get('vises')).toBeNull();
+    edit.save();
+    const [, data] = service.opdaterInfo.calls.mostRecent().args;
+    expect(data.visAltid).toBeFalse();
+    expect('vises' in data).toBeFalse();
+  });
+
+  it('requires a valid range when a legacy message is switched to scheduling', () => {
+    const legacy = { ...record, visAltid: undefined, publiceres: record.aftages, aftages: record.publiceres };
     TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, { useValue: legacy });
     const edit = TestBed.createComponent(RetInfoComponent).componentInstance;
-    edit.form.patchValue({ aftages: new Date(2026, 9, 17, 14, 35) });
+    edit.form.patchValue({ visAltid: false, aftages: new Date(2026, 9, 17, 14, 35) });
     expect(edit.form.hasError('dateRange')).toBeTrue();
     edit.save();
     expect(service.opdaterInfo).not.toHaveBeenCalled();
@@ -148,14 +164,82 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
     const fixture = TestBed.createComponent(OpretInfoComponent);
     fixture.detectChanges();
     fixture.componentInstance.form.setValue({
-      overskrift: 'Test', beskrivelse: 'Testbesked', berorte: 'Alle', vises: true,
+      overskrift: 'Test', beskrivelse: 'Testbesked', berorte: 'Alle', visAltid: false,
       publiceres: published, aftages: removed,
     });
     fixture.componentInstance.onOpretInfo();
     const [data, id] = service.createCourse.calls.mostRecent().args;
     expect(id).toBe('test-new');
-    expect(data.vises).toBeTrue();
+    expect('vises' in data).toBeFalse();
+    expect(data.visAltid).toBeFalse();
     expect(data.publiceres.toDate()).toEqual(published);
     expect(data.aftages.toDate()).toEqual(removed);
+  });
+
+  it('creates a permanent post without an expiry date and stores the new field', () => {
+    spyOn(window, 'alert');
+    spyOn(TestBed.inject(Router), 'navigateByUrl').and.returnValue(Promise.resolve(true));
+    const fixture = TestBed.createComponent(OpretInfoComponent);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.form.value.visAltid).toBeFalse();
+    fixture.componentInstance.form.setValue({
+      overskrift: 'Fast information', beskrivelse: 'Test', berorte: 'Alle',
+      visAltid: true, publiceres: published, aftages: null,
+    });
+    fixture.detectChanges();
+    expect(fixture.componentInstance.form.valid).toBeTrue();
+    expect(fixture.nativeElement.querySelector('[formControlName="aftages"]')).toBeNull();
+    fixture.componentInstance.onOpretInfo();
+    const [data] = service.createCourse.calls.mostRecent().args;
+    expect(data.visAltid).toBeTrue();
+    expect(data.aftages).toBeNull();
+    expect(data.publiceres.toDate()).toEqual(published);
+  });
+
+  it('requires an expiry date after a permanent post is changed to scheduling', () => {
+    TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, { useValue: { ...record, visAltid: true, aftages: null } });
+    const fixture = TestBed.createComponent(RetInfoComponent);
+    fixture.detectChanges();
+    const edit = fixture.componentInstance;
+    expect(edit.form.valid).toBeTrue();
+    edit.form.patchValue({ visAltid: false });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[formControlName="aftages"]')).not.toBeNull();
+    expect(edit.form.hasError('endRequired')).toBeTrue();
+    edit.save();
+    expect(service.opdaterInfo).not.toHaveBeenCalled();
+    edit.form.patchValue({ aftages: removed });
+    edit.save();
+    const [, data] = service.opdaterInfo.calls.mostRecent().args;
+    expect(data.visAltid).toBeFalse();
+    expect(data.aftages.toDate()).toEqual(removed);
+  });
+
+  it('can save edits to a permanent post with no expiry date', () => {
+    TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, { useValue: { ...record, visAltid: true, aftages: null } });
+    const edit = TestBed.createComponent(RetInfoComponent).componentInstance;
+    edit.form.patchValue({ beskrivelse: 'Ændret tekst' });
+    edit.save();
+    const [, data] = service.opdaterInfo.calls.mostRecent().args;
+    expect('vises' in data).toBeFalse();
+    expect(data.visAltid).toBeTrue();
+    expect(data.aftages).toBeNull();
+  });
+
+  it('clears date picker expiry errors when changing a timed post into a permanent post', () => {
+    const fixture = TestBed.createComponent(RetInfoComponent);
+    fixture.detectChanges();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('[formControlName="aftages"]');
+    input.value = '31-02-2026 10:00';
+    input.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.form.invalid).toBeTrue();
+    fixture.componentInstance.form.patchValue({ visAltid: true });
+    fixture.detectChanges();
+    expect(fixture.componentInstance.form.valid).toBeTrue();
+    fixture.componentInstance.save();
+    const [, data] = service.opdaterInfo.calls.mostRecent().args;
+    expect(data.visAltid).toBeTrue();
+    expect(data.aftages).toBeNull();
   });
 });

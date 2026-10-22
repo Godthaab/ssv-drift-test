@@ -5,11 +5,11 @@ import { DriftsinfoService } from '../services/driftsinfo.service';
 import { ForsideComponent } from './forside.component';
 
 describe('Administration overview tabs', () => {
-  it('renders only Aktuelle and Tidligere, matching the published app', async () => {
+  it('shows only Aktuelle and Tidligere', async () => {
     await TestBed.configureTestingModule({
       imports: [AppModule],
       providers: [{ provide: DriftsinfoService, useValue: {
-        loadInfo: () => of({ aktuelle: [], tidligere: [] }),
+        loadInfo: () => of({ aktuelle: [], planlagte: [], tidligere: [] }),
       } }],
     }).compileComponents();
     const fixture = TestBed.createComponent(ForsideComponent);

@@ -13,19 +13,25 @@
     <mat-form-field>
         <input matInput placeholder="Berørte" formControlName="berorte">
     </mat-form-field>
+    <p>
+        <mat-slide-toggle color="primary" formControlName="visAltid">Vis altid under Aktuelt</mat-slide-toggle>
+    </p>
+    <p *ngIf="form.get('visAltid').value">Posten bliver stående under Aktuelle i datoorden uanset datoperioden.</p>
+    <p *ngIf="!form.get('visAltid').value">Posten vises i den valgte periode og flyttes derefter automatisk til Tidligere.</p>
     <!-- Publiceres -->
-    <div style="font-weight:500; color: rgb(22, 149, 22); text-align: center;">Oprettet den: {{
+    <div style="font-weight:500; color: rgb(22, 149, 22); text-align: center;">Gemt dato: {{
         driftsinfo.publiceres?.toDate() | date:
         'dd-MM-yyyy HH:mm' }}
     </div>
     <mat-form-field>
-        <input matInput [ngxMatDatetimePicker]="pubPicker" placeholder="Vælg publicerings dato & tid"
+        <input matInput [ngxMatDatetimePicker]="pubPicker" [placeholder]="form.get('visAltid').value ? 'Dato til sortering' : 'Publicering: dato og tid'"
             formControlName="publiceres">
         <mat-datepicker-toggle matSuffix [for]="pubPicker"></mat-datepicker-toggle>
         <ngx-mat-datetime-picker #pubPicker></ngx-mat-datetime-picker>
     </mat-form-field>
 
     <!-- Aftages -->
+    <ng-container *ngIf="!form.get('visAltid').value">
     <div style="font-weight:500; color: rgb(22, 149, 22); text-align: center;">Aftages den: {{
         driftsinfo.aftages?.toDate() | date:
         'dd-MM-yyyy HH:mm' }}
@@ -36,11 +42,10 @@
         <mat-datepicker-toggle matSuffix [for]="aftagesPicker"></mat-datepicker-toggle>
         <ngx-mat-datetime-picker #aftagesPicker></ngx-mat-datetime-picker>
     </mat-form-field>
+    </ng-container>
 
+    <p role="alert" *ngIf="form.hasError('endRequired') && form.get('aftages').touched">Vælg en slutdato, eller slå »Vis altid under Aktuelt« til.</p>
     <p role="alert" *ngIf="form.hasError('dateRange')">Aftagningstidspunktet skal ligge efter publiceringstidspunktet.</p>
-    <mat-slide-toggle class="promo" color="primary" formControlName="vises">
-        Vises på web
-    </mat-slide-toggle>
 </mat-dialog-content>
 
 <mat-dialog-actions>

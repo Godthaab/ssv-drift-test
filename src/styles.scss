@@ -146,3 +146,37 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+// Keep the create/edit forms consistent. Material scales floating labels to 75%.
+app-ret-info,
+app-opret-info {
+  .mat-form-field {
+    font-size: 18px;
+
+    .mat-form-field-label {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    &:not(.mat-form-field-invalid):not(.mat-form-field-disabled) .mat-form-field-label {
+      color: mat.get-color-from-palette($primary);
+    }
+
+    .mat-form-field-suffix .mat-datepicker-toggle {
+      .mat-mdc-icon-button {
+        width: 40px;
+        height: 40px;
+        padding: 7px 0;
+
+        &:not(:disabled) {
+          color: mat.get-color-from-palette($primary);
+        }
+      }
+
+      .mat-datepicker-toggle-default-icon {
+        width: 26px;
+        height: 26px;
+      }
+    }
+  }
+}

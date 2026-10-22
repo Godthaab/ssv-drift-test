@@ -1,52 +1,91 @@
 <div class="info-panel">
-    <h1>Opret ny information</h1>
+  <h1>Opret ny information</h1>
 
-    <form [formGroup]="form">
-        <!-- Overskrift -->
-        <mat-form-field appearance="outline">
-            <input placeholder="Overskrift" matInput formControlName="overskrift">
-        </mat-form-field>
-        <!-- Beskrivelse -->
-        <mat-form-field appearance="outline">
-            <textarea matInput placeholder="Beskrivelse" formControlName="beskrivelse"></textarea>
-        </mat-form-field>
-        <!-- Berørte -->
-        <mat-form-field appearance="outline">
-            <input placeholder="Berørte" matInput formControlName="berorte">
-        </mat-form-field>
-        <!-- Publiceres -->
-        <mat-form-field>
-            <input matInput [ngxMatDatetimePicker]="pubPicker" placeholder="Vælg publicerings dato & tid"
-                formControlName="publiceres">
-            <mat-datepicker-toggle matSuffix [for]="pubPicker"></mat-datepicker-toggle>
-            <ngx-mat-datetime-picker #pubPicker></ngx-mat-datetime-picker>
-        </mat-form-field>
-        <!-- Aftages -->
-        <mat-form-field>
-            <input matInput [ngxMatDatetimePicker]="aftagesPicker" placeholder="Vælg slut dato & tid"
-                formControlName="aftages">
-            <mat-datepicker-toggle matSuffix [for]="aftagesPicker"></mat-datepicker-toggle>
-            <ngx-mat-datetime-picker #aftagesPicker></ngx-mat-datetime-picker>
-        </mat-form-field>
-        <p role="alert" *ngIf="form.hasError('dateRange')">Aftagningstidspunktet skal ligge efter publiceringstidspunktet.</p>
-        <!-- Vises -->
-        <span class="example-list-section">
-            <mat-slide-toggle class="promo" color="primary" formControlName="vises">
-                Vises på web?
-            </mat-slide-toggle>
-        </span>
-        <div>
-            <br>
-            <button mat-raised-button color="warn" [disabled]="!form.valid" (click)="onOpretInfo()">
-                Opret
-            </button><span style="padding-left:12px;">
-                <button mat-raised-button (click)="close()">
-                    fortryd
-                </button></span>
-        </div>
+  <form [formGroup]="form">
+    <!-- Overskrift -->
+    <mat-form-field appearance="outline">
+      <input placeholder="Overskrift" matInput formControlName="overskrift" />
+    </mat-form-field>
+    <!-- Beskrivelse -->
+    <mat-form-field appearance="outline">
+      <textarea
+        matInput
+        placeholder="Beskrivelse"
+        formControlName="beskrivelse"
+      ></textarea>
+    </mat-form-field>
+    <!-- Berørte -->
+    <mat-form-field appearance="outline">
+      <input placeholder="Berørte" matInput formControlName="berorte" />
+    </mat-form-field>
+    <p>
+      <mat-slide-toggle color="primary" formControlName="visAltid"
+        >Vis altid under Aktuelt</mat-slide-toggle
+      >
+    </p>
+    <p *ngIf="form.get('visAltid').value">
+      Posten bliver stående under Aktuelle i datoorden uanset datoperioden.
+    </p>
+    <p *ngIf="!form.get('visAltid').value">
+      Posten vises i den valgte periode og flyttes derefter automatisk til
+      Tidligere.
+    </p>
+    <!-- Publiceres -->
+    <mat-form-field>
+      <input
+        matInput
+        [ngxMatDatetimePicker]="pubPicker"
+        [placeholder]="
+          form.get('visAltid').value
+            ? 'Dato til sortering'
+            : 'Publicering: dato og tid'
+        "
+        formControlName="publiceres"
+      />
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="pubPicker"
+      ></mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #pubPicker></ngx-mat-datetime-picker>
+    </mat-form-field>
+    <!-- Aftages -->
+    <mat-form-field *ngIf="!form.get('visAltid').value">
+      <input
+        matInput
+        [ngxMatDatetimePicker]="aftagesPicker"
+        placeholder="Vælg slut dato & tid"
+        formControlName="aftages"
+      />
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="aftagesPicker"
+      ></mat-datepicker-toggle>
+      <ngx-mat-datetime-picker #aftagesPicker></ngx-mat-datetime-picker>
+    </mat-form-field>
+    <p
+      role="alert"
+      *ngIf="form.hasError('endRequired') && form.get('aftages').touched"
+    >
+      Vælg en slutdato, eller slå »Vis altid under Aktuelt« til.
+    </p>
+    <p role="alert" *ngIf="form.hasError('dateRange')">
+      Aftagningstidspunktet skal ligge efter publiceringstidspunktet.
+    </p>
+    <div>
+      <br />
+      <button
+        mat-raised-button
+        color="warn"
+        [disabled]="!form.valid"
+        (click)="onOpretInfo()"
+      >
+        Opret</button
+      ><span style="padding-left: 12px">
+        <button mat-raised-button (click)="close()">fortryd</button></span
+      >
+    </div>
+  </form>
 
-    </form>
-
-    <!-- <div><span [innerHTML]="pubLokaltid"></span> = {{form.get('publiceres').value?.toLocaleString()}}</div>
+  <!-- <div><span [innerHTML]="pubLokaltid"></span> = {{form.get('publiceres').value?.toLocaleString()}}</div>
     <div><span [innerHTML]="aftagesLokaltid"></span> = {{form.get('aftages').value?.toLocaleString()}}</div> -->
 </div>

@@ -26,26 +26,50 @@ npm start
 Begge miljøfiler peger på den eksisterende Firebase-database. Ændringer i
 meddelelserne lokalt påvirker derfor også den offentlige hjemmeside.
 
-## Visning af driftsmeddelelser
+## Faste og tidsstyrede driftsmeddelelser
 
-Administrationsappen følger den udgivne app på `drift.stillinge-strands-vandv.dk`:
+Der er kun ét valg for synlighed i oprettelse og redigering:
 
-- **Aktuelle:** feltet `vises` er `true`.
-- **Tidligere:** feltet `vises` er `false`.
+- **Vis altid under Aktuelt** (`visAltid: true`): posten bliver under Aktuelle,
+  uanset datoerne. Publiceringsdatoen bruges til sortering; slutdato er valgfri.
+- **Uden markering** (`visAltid: false`): posten vises, når
+  `publiceres <= nu < aftages`. Der kræves en slutdato efter publiceringen.
+  Ved slutdatoen flytter visningen automatisk posten til Tidligere.
 
-Begge lister sorteres efter `publiceres`, nyeste først, med samme Firestore-
-forespørgsler som den udgivne app. Datoerne flytter ikke meddelelser mellem
-fanerne. Gamle meddelelser, hvor »Vises på web« stadig er slået til, vises derfor
-under Aktuelle, også selvom aftagningsdatoen er passeret eller ligger før
-publiceringen. Visningen ændrer ikke dokumenter i databasen.
+»Vises på web« er fjernet fra formularerne. Ved oprettelse og gemning beregnes
+`vises` automatisk ud fra postens aktuelle status, så den eksisterende offentlige
+kode stadig kan finde den. Den nye kode bruger `visAltid` og datoerne; et gammelt
+`vises`-felt kan ikke overstyre et eksplicit `visAltid`-valg.
 
-Gamle meddelelser kan redigeres og skjules manuelt med deres oprindelige
-datoer, også hvis datoerne ligger i forkert rækkefølge. Ved oprettelse eller
-ændring af datoerne kræves en aftagningsdato efter publiceringsdatoen.
+Databasen er LIVE, også ved lokal udvikling. Den endnu ikke opdaterede offentlige
+version viser den status, der blev beregnet ved seneste gemning. Den får først
+automatisk publicering/aftagning efter de nye datoer, når dens kode også er
+udgivet. Et lokalt urtick opdaterer kun visningen og skriver ikke til databasen.
+Allerede oprettede testposter uden `vises` får kompatibilitetsfeltet ved næste
+almindelige gemning; der udføres ikke automatisk ændringer i dem.
 
-Listerne følger Firestore-ændringer, så ændringer fra andre sessioner også
-vises. Meddelelseskortene viser dato, overskrift, beskrivelse, berørte samt
-redigerings- og sletteikoner som i den udgivne app.
+Eksisterende dokumenter uden `visAltid` bevarer deres gamle placering, indtil
+de bliver redigeret: `vises: true` betyder Aktuelle, og `vises: false` betyder
+Tidligere. Formularen åbner med »Vis altid under Aktuelt« slået til for de
+førstnævnte og fra for de sidstnævnte. Efter gemning gælder det nye valg og
+datoerne. Der foretages ingen automatisk migration eller databaseændring ved
+blot at åbne appen. Dokumenter uden nogen af felterne følger datoerne.
+
+Nye poster starter med »Vis altid under Aktuelt« slået fra. Alle aktuelle
+poster sorteres efter `publiceres`, nyeste først. Faste og tidsstyrede poster
+blandes i samme datoorden; faste poster fastgøres ikke øverst.
+
+Der vises kun fanerne **Aktuelle** og **Tidligere**. Kommende tidsstyrede poster
+vises først ved publiceringstidspunktet; der er ingen fane til planlagte poster.
+**Tidligere** indeholder udløbne poster og tidsstyrede poster med ugyldige
+datoer samt gamle, urørte poster med `vises: false`.
+Listerne følger Firestore-ændringer og kontrollerer tiden hvert sekund, så en
+åben side også skifter ved publicering og aftagning. Tidsstempler sammenlignes
+som absolutte tidspunkter; datoindtastning og visning bruger lokal tid.
+
+Samme regler findes i `ssv-280225`. Begge apps skal udgives med ændringen,
+før den forenklede styring fungerer på den offentlige hjemmeside. Visningen
+skriver ikke til databasen; aftagning ændrer ikke selve dokumentet.
 
 ## Udseende efter Angular 15-opgraderingen
 

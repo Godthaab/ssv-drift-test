@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { combineLatest, from, Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { Driftsinfo, DriftsinfoCategories } from '../model/driftsinfo';
 import { concatMap, map, shareReplay } from 'rxjs/operators';
 import { convertSnaps } from './db-utils';
+import { watchDriftsinfo, withLegacyVisibility } from './driftsinfo-status';
 @Injectable({
   providedIn: 'root',
 })
@@ -11,15 +12,11 @@ export class DriftsinfoService {
   private readonly infos$: Observable<DriftsinfoCategories>;
 
   constructor(private db: AngularFirestore) {
-    // Match the published administration app: the stored flag alone selects
-    // the tab, including legacy messages with old or reversed date ranges.
-    const loadCategory = (visible: boolean) => this.db.collection<Driftsinfo>(
-      'driftsinfo', ref => ref.where('vises', '==', visible).orderBy('publiceres', 'desc')
+    // Read both legacy documents and posts using the new visibility choice.
+    const records$ = this.db.collection<Driftsinfo>(
+      'driftsinfo', ref => ref.orderBy('publiceres', 'desc')
     ).valueChanges({ idField: 'id' });
-    this.infos$ = combineLatest([loadCategory(true), loadCategory(false)]).pipe(
-      map(([aktuelle, tidligere]) => ({ aktuelle, tidligere })),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+    this.infos$ = watchDriftsinfo(records$).pipe(shareReplay({ bufferSize: 1, refCount: true }));
   }
 
   // tslint:disable-next-line:typedef
@@ -28,7 +25,7 @@ export class DriftsinfoService {
   }
 
   opdaterInfo(infoId: string, changes: Partial<Driftsinfo>): Observable<any> {
-    return from(this.db.doc(`driftsinfo/${infoId}`).update(changes));
+    return from(this.db.doc(`driftsinfo/${infoId}`).update(withLegacyVisibility(changes)));
   }
 
   loadInfo(): Observable<DriftsinfoCategories> {
@@ -47,7 +44,7 @@ export class DriftsinfoService {
           const sidsteInfoNr = driftsinfos[0]?.infoNr ?? 0;
 
           const driftsinfo = {
-            ...newCourse,
+            ...withLegacyVisibility(newCourse),
             infoNr: sidsteInfoNr + 1,
           };
 
