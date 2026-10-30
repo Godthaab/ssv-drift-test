@@ -18,17 +18,9 @@
     <mat-form-field appearance="outline">
       <input placeholder="Berørte" matInput formControlName="berorte" />
     </mat-form-field>
-    <p>
-      <mat-slide-toggle color="primary" formControlName="visAltid"
-        >Vis altid under Aktuelt</mat-slide-toggle
-      >
-    </p>
-    <p *ngIf="form.get('visAltid').value">
-      Posten bliver stående under Aktuelle i datoorden uanset datoperioden.
-    </p>
-    <p *ngIf="!form.get('visAltid').value">
-      Posten vises i den valgte periode og flyttes derefter automatisk til
-      Tidligere.
+    <p *ngIf="!form.controls['visAltid'].value">
+      Før starttidspunktet vises posten under Planlagte. Fra start til slut
+      vises den under Aktuelle, og ved sluttidspunktet flyttes den til Tidligere.
     </p>
     <!-- Publiceres -->
     <mat-form-field>
@@ -36,7 +28,7 @@
         matInput
         [ngxMatDatetimePicker]="pubPicker"
         [placeholder]="
-          form.get('visAltid').value
+          form.controls['visAltid'].value
             ? 'Dato til sortering'
             : 'Publicering: dato og tid'
         "
@@ -49,7 +41,7 @@
       <ngx-mat-datetime-picker #pubPicker></ngx-mat-datetime-picker>
     </mat-form-field>
     <!-- Aftages -->
-    <mat-form-field *ngIf="!form.get('visAltid').value">
+    <mat-form-field *ngIf="!form.controls['visAltid'].value">
       <input
         matInput
         [ngxMatDatetimePicker]="aftagesPicker"
@@ -64,9 +56,9 @@
     </mat-form-field>
     <p
       role="alert"
-      *ngIf="form.hasError('endRequired') && form.get('aftages').touched"
+      *ngIf="form.hasError('endRequired') && form.controls['aftages'].touched"
     >
-      Vælg en slutdato, eller slå »Vis altid under Aktuelt« til.
+      Vælg en slutdato.
     </p>
     <p role="alert" *ngIf="form.hasError('dateRange')">
       Aftagningstidspunktet skal ligge efter publiceringstidspunktet.
@@ -85,7 +77,4 @@
       >
     </div>
   </form>
-
-  <!-- <div><span [innerHTML]="pubLokaltid"></span> = {{form.get('publiceres').value?.toLocaleString()}}</div>
-    <div><span [innerHTML]="aftagesLokaltid"></span> = {{form.get('aftages').value?.toLocaleString()}}</div> -->
 </div>

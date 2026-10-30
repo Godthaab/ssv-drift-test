@@ -1,0 +1,12 @@
+{
+  "name": "ssv-drift-firestore-backup",
+  "private": true,
+  "description": "Local JSON backup and restore utility for the ssv-drift Firestore collection.",
+  "scripts": {
+    "backup": "node firestore-backup.cjs export",
+    "restore": "node firestore-backup.cjs import"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.5.0"
+  }
+}

@@ -3,8 +3,8 @@ import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDia
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Driftsinfo } from '../model/driftsinfo';
 import { bindDriftsinfoExpiry, driftsinfoDatesValidator } from '../services/driftsinfo-dates.validator';
-import { Subscription } from 'rxjs';
-import { isAlwaysVisible } from '../services/driftsinfo-status';
+import { Subscription, timer } from 'rxjs';
+import { getDriftsinfoStatus, isAlwaysVisible } from '../services/driftsinfo-status';
 import { DriftsinfoService } from '../services/driftsinfo.service';
 import * as moment from 'moment';
 import { ThemePalette } from '@angular/material/core';
@@ -19,6 +19,7 @@ import 'firebase/compat/firestore';
 export class RetInfoComponent implements OnDestroy {
   form: UntypedFormGroup;
   private readonly expirySubscription: Subscription;
+  private readonly statusSubscription: Subscription;
   /* For indsættelse af Dato */
   @ViewChild('picker') picker: any;
   public pubLokaltid = `formGroup.get('publiceres').value?.toLocaleString()`;
@@ -37,6 +38,7 @@ export class RetInfoComponent implements OnDestroy {
   public stepSecond = 1;
   public color: ThemePalette = 'primary';
   driftsinfo: Driftsinfo;
+  canSetAlwaysVisible = false;
 
   constructor(
     private dialogRef: MatDialogRef<RetInfoComponent>,
@@ -45,6 +47,10 @@ export class RetInfoComponent implements OnDestroy {
     private driftsinfoService: DriftsinfoService
   ) {
     this.driftsinfo = driftsinfo;
+    this.canSetAlwaysVisible = getDriftsinfoStatus(driftsinfo, Date.now()) === 'tidligere';
+    this.statusSubscription = timer(1000, 1000).subscribe(() => {
+      this.canSetAlwaysVisible = getDriftsinfoStatus(driftsinfo, Date.now()) === 'tidligere';
+    });
 
     this.form = this.fb.group({
       overskrift: [driftsinfo.overskrift, Validators.required],
@@ -59,6 +65,7 @@ export class RetInfoComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.expirySubscription.unsubscribe();
+    this.statusSubscription.unsubscribe();
   }
 
   close(): void {

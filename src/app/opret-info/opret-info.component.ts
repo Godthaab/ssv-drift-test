@@ -82,7 +82,7 @@ export class OpretInfoComponent implements OnInit, OnDestroy {
       visAltid: val.visAltid,
     };
 
-    nyInfo.publiceres = Timestamp.fromDate(this.form.value.publiceres);
+    nyInfo.publiceres = Timestamp.fromDate(val.publiceres);
     nyInfo.aftages = val.aftages ? Timestamp.fromDate(val.aftages) : null;
     console.log('nyInfo.aftages: ', nyInfo.aftages);
     this.driftsinfoService

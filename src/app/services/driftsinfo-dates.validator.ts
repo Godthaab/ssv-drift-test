@@ -2,8 +2,9 @@ import { AbstractControl, UntypedFormGroup, ValidationErrors } from '@angular/fo
 import { Subscription } from 'rxjs';
 
 export function bindDriftsinfoExpiry(form: UntypedFormGroup): Subscription {
+  const alwaysVisible = form.controls['visAltid'];
+  const expiry = form.controls['aftages'];
   const update = (always: boolean) => {
-    const expiry = form.get('aftages');
     // Disabled controls cannot retain irrelevant date-picker validation errors.
     if (always) {
       expiry.disable({ emitEvent: false });
@@ -11,8 +12,8 @@ export function bindDriftsinfoExpiry(form: UntypedFormGroup): Subscription {
       expiry.enable({ emitEvent: false });
     }
   };
-  update(form.get('visAltid').value);
-  return form.get('visAltid').valueChanges.subscribe(update);
+  update(alwaysVisible.value === true);
+  return alwaysVisible.valueChanges.subscribe(value => update(value === true));
 }
 
 export function driftsinfoDatesValidator(control: AbstractControl): ValidationErrors | null {
