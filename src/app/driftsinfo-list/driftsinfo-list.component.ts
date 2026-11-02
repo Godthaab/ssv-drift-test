@@ -1,12 +1,39 @@
 import { DriftsinfoService } from './../services/driftsinfo.service';
-import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
-import { catchError, tap } from 'rxjs/operators';
+import { Component, EventEmitter, OnInit, Output, Input, Inject } from '@angular/core';
+import { catchError, filter, switchMap, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { Driftsinfo } from '../model/driftsinfo';
-import { MatLegacyDialog as MatDialog, MatLegacyDialogConfig as MatDialogConfig } from '@angular/material/legacy-dialog';
+import {
+  MAT_LEGACY_DIALOG_DATA,
+  MatLegacyDialog as MatDialog,
+  MatLegacyDialogConfig as MatDialogConfig,
+  MatLegacyDialogRef as MatDialogRef,
+} from '@angular/material/legacy-dialog';
 import { Router } from '@angular/router';
 import { RetInfoComponent } from '../ret-info/ret-info.component';
 import 'firebase/compat/firestore';
+
+@Component({
+  selector: 'app-confirm-delete-dialog',
+  template: `
+    <h2 mat-dialog-title>Er du sikker?</h2>
+    <mat-dialog-content>
+      <p>Vil du slette “{{ data.overskrift }}”?</p>
+      <p>Handlingen kan ikke fortrydes.</p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" (click)="dialogRef.close(false)">Annuller</button>
+      <button mat-raised-button color="warn" type="button" (click)="dialogRef.close(true)">Slet</button>
+    </mat-dialog-actions>
+  `,
+})
+export class ConfirmDeleteDialogComponent {
+  constructor(
+    @Inject(MAT_LEGACY_DIALOG_DATA) public data: Driftsinfo,
+    public dialogRef: MatDialogRef<ConfirmDeleteDialogComponent>
+  ) {}
+}
+
 /* Anvendt datoformat: */
 /* 'dd-MM-YYYY h:mm:ss a' */
 /* I denne app bruges danske standdard: date:'dd-MM-YYYY h:mm' */
@@ -59,9 +86,16 @@ export class DriftsinfoListComponent implements OnInit {
 
   // tslint:disable-next-line:typedef
   vedSletInfo(driftsinfo: Driftsinfo) {
-    this.driftsinfoService
-      .sletinfo(driftsinfo.id)
+    this.dialog
+      .open(ConfirmDeleteDialogComponent, {
+        data: driftsinfo,
+        width: '420px',
+        maxWidth: 'calc(100vw - 32px)',
+      })
+      .afterClosed()
       .pipe(
+        filter((confirmed) => confirmed === true),
+        switchMap(() => this.driftsinfoService.sletinfo(driftsinfo.id)),
         tap(() => {
           console.log('Informationen er slettet', driftsinfo);
           alert('Informationen er slettet!');

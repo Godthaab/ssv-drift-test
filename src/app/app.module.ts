@@ -32,7 +32,7 @@ import { MatLegacySlideToggleModule as MatSlideToggleModule } from '@angular/mat
 import {HttpClientModule} from '@angular/common/http';
 import {MatNativeDateModule, MAT_DATE_LOCALE} from '@angular/material/core';
 import { ForsideComponent } from './forside/forside.component';
-import { DriftsinfoListComponent } from './driftsinfo-list/driftsinfo-list.component';
+import { ConfirmDeleteDialogComponent, DriftsinfoListComponent } from './driftsinfo-list/driftsinfo-list.component';
 import { RetInfoComponent } from './ret-info/ret-info.component';
 import { OpretInfoComponent } from './opret-info/opret-info.component';
 import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule, NgxMatDateAdapter, NGX_MAT_DATE_FORMATS } from '@angular-material-components/datetime-picker';
@@ -44,6 +44,7 @@ import { DanishDatetimeAdapter, DANISH_DATETIME_FORMATS } from './services/danis
     LoginComponent,
     ForsideComponent,
     DriftsinfoListComponent,
+    ConfirmDeleteDialogComponent,
     RetInfoComponent,
     OpretInfoComponent,
   ],

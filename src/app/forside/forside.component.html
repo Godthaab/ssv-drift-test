@@ -11,7 +11,9 @@
       <app-driftsinfo-list [driftsinfos]="infos.aktuelle" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
     </mat-tab>
     <mat-tab label="Planlagte">
-      <p *ngIf="!infos.planlagte.length">Ingen planlagte driftsmeddelelser.</p>
+      <mat-card *ngIf="!infos.planlagte.length" class="driftsinfo-card mat-elevation-z7">
+        Ingen planlagte driftsmeddelelser.
+      </mat-card>
       <app-driftsinfo-list [driftsinfos]="infos.planlagte" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
     </mat-tab>
     <mat-tab label="Tidligere">
