@@ -10,6 +10,10 @@
       <p *ngIf="!infos.aktuelle.length">Ingen aktuelle driftsmeddelelser.</p>
       <app-driftsinfo-list [driftsinfos]="infos.aktuelle" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
     </mat-tab>
+    <mat-tab label="Planlagte">
+      <p *ngIf="!infos.planlagte.length">Ingen planlagte driftsmeddelelser.</p>
+      <app-driftsinfo-list [driftsinfos]="infos.planlagte" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
+    </mat-tab>
     <mat-tab label="Tidligere">
       <app-driftsinfo-list [driftsinfos]="infos.tidligere" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
     </mat-tab>
