@@ -13,11 +13,11 @@
     <mat-form-field>
         <input matInput placeholder="Berørte" formControlName="berorte">
     </mat-form-field>
-    <p *ngIf="canSetAlwaysVisible">
+    <p>
         <mat-slide-toggle color="primary" formControlName="visAltid">Vis altid under Aktuelt</mat-slide-toggle>
     </p>
-    <p *ngIf="canSetAlwaysVisible && form.controls['visAltid'].value">Posten bliver stående under Aktuelle i datoorden uanset datoperioden.</p>
-    <p *ngIf="canSetAlwaysVisible && !form.controls['visAltid'].value">Før starttidspunktet vises posten under Planlagte. Fra start til slut vises den under Aktuelle, og ved sluttidspunktet flyttes den til Tidligere.</p>
+    <p *ngIf="form.controls['visAltid'].value">Posten bliver stående under Aktuelle i datoorden uanset datoperioden.</p>
+    <p *ngIf="!form.controls['visAltid'].value">Før starttidspunktet vises posten under Planlagte. Fra start til slut vises den under Aktuelle, og ved sluttidspunktet flyttes den til Tidligere.</p>
     <!-- Publiceres -->
     <div style="font-weight:500; color: rgb(22, 149, 22); text-align: center;">Gemt dato: {{
         driftsinfo.publiceres?.toDate() | date:
