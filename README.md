@@ -2,13 +2,13 @@
 
 Kundens administrationsapp til oprettelse og redigering af driftsmeddelelser.
 Appen hedder `ssv-drift` og bruger samme Firebase-projekt (`petec-login`) og
-Firestore-samling (`driftsinfo`) som den offentlige hjemmeside `ssv-280225`.
+Firestore-samling (`driftsinfo`) som den offentlige hjemmeside `ssv`.
 
 ## Versioner
 
 Angular/Material 15.2.6, Angular CLI 15.2.5, TypeScript 4.8.4,
 AngularFire 7.5.0 og Firebase 9.18.0. De fælles versioner svarer til
-`ssv-280225`. FirebaseUI er opdateret til 6.0.2, og datovælgeren til den
+`ssv`. FirebaseUI er opdateret til 6.0.2, og datovælgeren til den
 Angular 15-kompatible version 9.0.0 for Material legacy-komponenter.
 
 Angular 15 understøtter Node 14.20, 16.13 og 18.10 eller nyere inden for
@@ -67,7 +67,7 @@ Listerne følger Firestore-ændringer og kontrollerer tiden hvert sekund, så en
 åben side også skifter ved publicering og aftagning. Tidsstempler sammenlignes
 som absolutte tidspunkter; datoindtastning og visning bruger lokal tid.
 
-Samme regler findes i `ssv-280225`. Begge apps skal udgives med ændringen,
+Samme regler findes i `ssv`. Begge apps skal udgives med ændringen,
 før den forenklede styring fungerer på den offentlige hjemmeside. Visningen
 skriver ikke til databasen; aftagning ændrer ikke selve dokumentet.
 
@@ -106,21 +106,20 @@ Produktionsfiler ligger i `dist/ssv-drift`. `src/assets/CNAME` bevarer adressen
 `drift.stillinge-strands-vandv.dk` ved senere udgivelse til GitHub Pages.
 Der udgives ikke automatisk ved build.
 
-## Udgivelse til den eksisterende administrationsside
+## Udgivelse til administrationssiden
 
-Kildekoden gemmes på `origin master` i `Godthaab/ssv-drift`. Den aktive
-GitHub Pages-side på `drift.stillinge-strands-vandv.dk` ligger fortsat på
-`gh-pages` i `Godthaab/ssv-drift-13Okt` (lokal remote: `backup`).
-Bevar denne hosting og domæneopsætning ved udgivelse:
+Kildekoden gemmes på `origin master` i `Godthaab/ssv-drift`. Den hidtidige
+live-side ligger på `gh-pages` i backup-repositoriet `Godthaab/ssv-drift-13Okt`.
+Den nye build skal udgives til `gh-pages` i `Godthaab/ssv-drift`:
 
 ```bash
 npm run build
-npx --no-install angular-cli-ghpages --dir=dist/ssv-drift --repo=https://github.com/Godthaab/ssv-drift-13Okt.git --cname=drift.stillinge-strands-vandv.dk
+npx --no-install angular-cli-ghpages --dir=dist/ssv-drift --repo=https://github.com/Godthaab/ssv-drift.git --cname=drift.stillinge-strands-vandv.dk
 ```
 
-Brug det kontrollerede produktionsbuild, og kontrollér efterfølgende login
-og visning på den offentlige adresse. Der skal ikke oprettes en ny Pages-side
-eller flyttes et domæne for at udgive fra dette kildeprojekt.
+Ved domæneflytningen skal den gamle Pages-indstilling fjernes fra
+`ssv-drift-13Okt`, og den nye Pages-side skal bruge `gh-pages` i `ssv-drift`.
+Kontrollér derefter login og visning på den offentlige adresse.
 
 Firestore bruger fortsat de publicerede regler i Firebase Console. Appens
 routebeskyttelse erstatter ikke databasens adgangsregler. Offentlig læsning og
