@@ -2,61 +2,69 @@
 
 <mat-dialog-content [formGroup]="form">
 
-    <mat-form-field>
-        <input matInput placeholder="Overskrift" formControlName="overskrift">
-    </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Overskrift" formControlName="overskrift">
+  </mat-form-field>
 
-    <mat-form-field>
-        <textarea matInput placeholder="Beskrivelse" formControlName="beskrivelse">
-        </textarea>
-    </mat-form-field>
-    <mat-form-field>
-        <input matInput placeholder="Berørte" formControlName="berorte">
-    </mat-form-field>
-    <p>
-        <mat-slide-toggle color="primary" formControlName="visAltid">Vis altid under Aktuelt</mat-slide-toggle>
-    </p>
-    <p *ngIf="form.controls['visAltid'].value">Posten bliver stående under Aktuelle i datoorden uanset datoperioden.</p>
-    <p *ngIf="!form.controls['visAltid'].value">Før starttidspunktet vises posten under Planlagte. Fra start til slut vises den under Aktuelle, og ved sluttidspunktet flyttes den til Tidligere.</p>
-    <!-- Publiceres -->
-    <div style="font-weight:500; color: rgb(22, 149, 22); text-align: center;">Gemt dato: {{
-        driftsinfo.publiceres?.toDate() | date:
-        'dd-MM-yyyy HH:mm' }}
-    </div>
-    <mat-form-field>
-        <input matInput [mtxDatetimepicker]="pubPicker" [placeholder]="form.controls['visAltid'].value ? 'Dato til sortering' : 'Publicering: dato og tid'"
-            formControlName="publiceres">
-        <mtx-datetimepicker-toggle matSuffix [for]="pubPicker"></mtx-datetimepicker-toggle>
-        <mtx-datetimepicker #pubPicker type="datetime"></mtx-datetimepicker>
-    </mat-form-field>
+  <mat-form-field>
+    <textarea matInput placeholder="Beskrivelse" formControlName="beskrivelse">
+    </textarea>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput placeholder="Berørte" formControlName="berorte">
+  </mat-form-field>
+  <p>
+    <mat-slide-toggle color="primary" formControlName="visAltid">Vis altid under Aktuelt</mat-slide-toggle>
+  </p>
+  @if (form.controls['visAltid'].value) {
+    <p>Posten bliver stående under Aktuelle i datoorden uanset datoperioden.</p>
+  }
+  @if (!form.controls['visAltid'].value) {
+    <p>Før starttidspunktet vises posten under Planlagte. Fra start til slut vises den under Aktuelle, og ved sluttidspunktet flyttes den til Tidligere.</p>
+  }
+  <!-- Publiceres -->
+  <div style="font-weight:500; color: rgb(22, 149, 22); text-align: center;">Gemt dato: {{
+    driftsinfo.publiceres?.toDate() | date:
+    'dd-MM-yyyy HH:mm' }}
+  </div>
+  <mat-form-field>
+    <input matInput [mtxDatetimepicker]="pubPicker" [placeholder]="form.controls['visAltid'].value ? 'Dato til sortering' : 'Publicering: dato og tid'"
+      formControlName="publiceres">
+    <mtx-datetimepicker-toggle matSuffix [for]="pubPicker"></mtx-datetimepicker-toggle>
+    <mtx-datetimepicker #pubPicker type="datetime"></mtx-datetimepicker>
+  </mat-form-field>
 
-    <!-- Aftages -->
-    <ng-container *ngIf="!form.controls['visAltid'].value">
+  <!-- Aftages -->
+  @if (!form.controls['visAltid'].value) {
     <div style="font-weight:500; color: rgb(22, 149, 22); text-align: center;">Aftages den: {{
-        driftsinfo.aftages?.toDate() | date:
-        'dd-MM-yyyy HH:mm' }}
+      driftsinfo.aftages?.toDate() | date:
+      'dd-MM-yyyy HH:mm' }}
     </div>
     <mat-form-field>
-        <input matInput [mtxDatetimepicker]="aftagesPicker" placeholder="Vælg slut dato & tid"
-            formControlName="aftages">
-        <mtx-datetimepicker-toggle matSuffix [for]="aftagesPicker"></mtx-datetimepicker-toggle>
-        <mtx-datetimepicker #aftagesPicker type="datetime"></mtx-datetimepicker>
+      <input matInput [mtxDatetimepicker]="aftagesPicker" placeholder="Vælg slut dato & tid"
+        formControlName="aftages">
+      <mtx-datetimepicker-toggle matSuffix [for]="aftagesPicker"></mtx-datetimepicker-toggle>
+      <mtx-datetimepicker #aftagesPicker type="datetime"></mtx-datetimepicker>
     </mat-form-field>
-    </ng-container>
+  }
 
-    <p role="alert" *ngIf="form.hasError('endRequired') && form.controls['aftages'].touched">Vælg en slutdato.</p>
-    <p role="alert" *ngIf="form.hasError('dateRange')">Aftagningstidspunktet skal ligge efter publiceringstidspunktet.</p>
+  @if (form.hasError('endRequired') && form.controls['aftages'].touched) {
+    <p role="alert">Vælg en slutdato.</p>
+  }
+  @if (form.hasError('dateRange')) {
+    <p role="alert">Aftagningstidspunktet skal ligge efter publiceringstidspunktet.</p>
+  }
 </mat-dialog-content>
 
 <mat-dialog-actions>
 
-    <button mat-raised-button (click)="close()">
-        Luk
-    </button>
+  <button mat-raised-button (click)="close()">
+    Luk
+  </button>
 
-    <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">
-        Opdater
-    </button>
-    <!-- <div style="margin-top:20px;"><span [innerHTML]="pubLokaltid"></span> = {{form.get('publiceres').value?.toLocaleString()}}</div>
-    <div><span [innerHTML]="aftagesLokaltid"></span> = {{form.get('aftages').value?.toLocaleString()}}</div> -->
+  <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">
+    Opdater
+  </button>
+  <!-- <div style="margin-top:20px;"><span [innerHTML]="pubLokaltid"></span> = {{form.get('publiceres').value?.toLocaleString()}}</div>
+  <div><span [innerHTML]="aftagesLokaltid"></span> = {{form.get('aftages').value?.toLocaleString()}}</div> -->
 </mat-dialog-actions>

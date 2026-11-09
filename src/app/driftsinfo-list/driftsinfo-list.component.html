@@ -1,17 +1,21 @@
-<div class="spinner-container" *ngIf="driftsinfos === null">
-  <mat-spinner></mat-spinner>
-</div>
-<mat-card *ngFor="let driftsinfo of driftsinfos" class="driftsinfo-card mat-elevation-z7">
-  <p>{{driftsinfo.publiceres?.toDate() | date:'dd-MM-yyyy H:mm'}}</p>
-  <mat-card-title><span class="message-title">{{ driftsinfo.overskrift }}</span></mat-card-title>
-  <mat-card-content class="description">{{ driftsinfo.beskrivelse }}</mat-card-content>
-  <mat-card-content><strong>Berørte:</strong> {{driftsinfo.berorte}}</mat-card-content>
-  <mat-card-actions class="driftsinfo-actions">
-    <button mat-mini-fab class="edit-info-button" (click)="RetInfoComponent(driftsinfo)" [attr.aria-label]="'Rediger ' + driftsinfo.overskrift">
-      <mat-icon>edit</mat-icon>
-    </button>
-    <button mat-mini-fab color="warn" (click)="vedSletInfo(driftsinfo)" [attr.aria-label]="'Slet ' + driftsinfo.overskrift">
-      <mat-icon>delete</mat-icon>
-    </button>
-  </mat-card-actions>
-</mat-card>
+@if (driftsinfos === null) {
+  <div class="spinner-container">
+    <mat-spinner></mat-spinner>
+  </div>
+}
+@for (driftsinfo of driftsinfos; track driftsinfo) {
+  <mat-card class="driftsinfo-card mat-elevation-z7">
+    <p>{{driftsinfo.publiceres?.toDate() | date:'dd-MM-yyyy H:mm'}}</p>
+    <mat-card-title><span class="message-title">{{ driftsinfo.overskrift }}</span></mat-card-title>
+    <mat-card-content class="description">{{ driftsinfo.beskrivelse }}</mat-card-content>
+    <mat-card-content><strong>Berørte:</strong> {{driftsinfo.berorte}}</mat-card-content>
+    <mat-card-actions class="driftsinfo-actions">
+      <button mat-mini-fab class="edit-info-button" (click)="RetInfoComponent(driftsinfo)" [attr.aria-label]="'Rediger ' + driftsinfo.overskrift">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-mini-fab color="warn" (click)="vedSletInfo(driftsinfo)" [attr.aria-label]="'Slet ' + driftsinfo.overskrift">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+}

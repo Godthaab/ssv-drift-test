@@ -5,20 +5,27 @@
       <mat-icon>add</mat-icon>
     </button>
   </div>
-  <mat-tab-group *ngIf="infos$ | async as infos; else loading">
-    <mat-tab label="Aktuelle">
-      <p *ngIf="!infos.aktuelle.length">Ingen aktuelle driftsmeddelelser.</p>
-      <app-driftsinfo-list [driftsinfos]="infos.aktuelle" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
-    </mat-tab>
-    <mat-tab label="Planlagte">
-      <mat-card *ngIf="!infos.planlagte.length" class="driftsinfo-card mat-elevation-z7">
-        Ingen planlagte driftsmeddelelser.
-      </mat-card>
-      <app-driftsinfo-list [driftsinfos]="infos.planlagte" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
-    </mat-tab>
-    <mat-tab label="Tidligere">
-      <app-driftsinfo-list [driftsinfos]="infos.tidligere" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
-    </mat-tab>
-  </mat-tab-group>
-  <ng-template #loading><mat-spinner></mat-spinner></ng-template>
+  @if (infos$ | async; as infos) {
+    <mat-tab-group>
+      <mat-tab label="Aktuelle">
+        @if (!infos.aktuelle.length) {
+          <p>Ingen aktuelle driftsmeddelelser.</p>
+        }
+        <app-driftsinfo-list [driftsinfos]="infos.aktuelle" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
+      </mat-tab>
+      <mat-tab label="Planlagte">
+        @if (!infos.planlagte.length) {
+          <mat-card class="driftsinfo-card mat-elevation-z7">
+            Ingen planlagte driftsmeddelelser.
+          </mat-card>
+        }
+        <app-driftsinfo-list [driftsinfos]="infos.planlagte" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
+      </mat-tab>
+      <mat-tab label="Tidligere">
+        <app-driftsinfo-list [driftsinfos]="infos.tidligere" (infoRettet)="reloadInfo()" (infoSlettet)="reloadInfo()"></app-driftsinfo-list>
+      </mat-tab>
+    </mat-tab-group>
+  } @else {
+    <mat-spinner></mat-spinner>
+  }
 </div>

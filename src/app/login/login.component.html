@@ -6,17 +6,25 @@
     <mat-form-field appearance="outline">
       <mat-label>E-mail</mat-label>
       <input matInput type="email" autocomplete="username" formControlName="email" />
-      <mat-error *ngIf="form.controls.email.hasError('required')">Skriv din e-mailadresse.</mat-error>
-      <mat-error *ngIf="form.controls.email.hasError('email')">Skriv en gyldig e-mailadresse.</mat-error>
+      @if (form.controls.email.hasError('required')) {
+        <mat-error>Skriv din e-mailadresse.</mat-error>
+      }
+      @if (form.controls.email.hasError('email')) {
+        <mat-error>Skriv en gyldig e-mailadresse.</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Adgangskode</mat-label>
       <input matInput type="password" autocomplete="current-password" formControlName="password" />
-      <mat-error *ngIf="form.controls.password.hasError('required')">Skriv din adgangskode.</mat-error>
+      @if (form.controls.password.hasError('required')) {
+        <mat-error>Skriv din adgangskode.</mat-error>
+      }
     </mat-form-field>
 
-    <p class="login-error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</p>
+    @if (errorMessage) {
+      <p class="login-error" role="alert">{{ errorMessage }}</p>
+    }
     <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || busy">
       {{ busy ? 'Logger ind…' : 'Log ind' }}
     </button>
