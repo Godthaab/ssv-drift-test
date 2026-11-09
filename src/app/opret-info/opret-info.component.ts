@@ -14,9 +14,10 @@ import * as moment from 'moment';
 import { ThemePalette } from '@angular/material/core';
 
 @Component({
-  selector: 'app-opret-info',
-  templateUrl: './opret-info.component.html',
-  styleUrls: ['./opret-info.component.css'],
+    selector: 'app-opret-info',
+    templateUrl: './opret-info.component.html',
+    styleUrls: ['./opret-info.component.css'],
+    standalone: false
 })
 export class OpretInfoComponent implements OnInit, OnDestroy {
   infoId: string;

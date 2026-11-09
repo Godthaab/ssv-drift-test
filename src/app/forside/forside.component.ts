@@ -4,9 +4,10 @@ import { DriftsinfoService } from './../services/driftsinfo.service';
 import { DriftsinfoCategories } from '../model/driftsinfo';
 
 @Component({
-  selector: 'app-forside',
-  templateUrl: './forside.component.html',
-  styleUrls: ['./forside.component.css'],
+    selector: 'app-forside',
+    templateUrl: './forside.component.html',
+    styleUrls: ['./forside.component.css'],
+    standalone: false
 })
 export class ForsideComponent implements OnInit {
 

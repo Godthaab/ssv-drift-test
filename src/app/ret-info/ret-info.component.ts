@@ -12,9 +12,10 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 
 @Component({
-  selector: 'app-ret-info',
-  templateUrl: './ret-info.component.html',
-  styleUrls: ['./ret-info.component.css'],
+    selector: 'app-ret-info',
+    templateUrl: './ret-info.component.html',
+    styleUrls: ['./ret-info.component.css'],
+    standalone: false
 })
 export class RetInfoComponent implements OnDestroy {
   form: UntypedFormGroup;

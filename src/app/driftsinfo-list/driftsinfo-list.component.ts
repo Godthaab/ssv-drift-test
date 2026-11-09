@@ -14,8 +14,8 @@ import { RetInfoComponent } from '../ret-info/ret-info.component';
 import 'firebase/compat/firestore';
 
 @Component({
-  selector: 'app-confirm-delete-dialog',
-  template: `
+    selector: 'app-confirm-delete-dialog',
+    template: `
     <h2 mat-dialog-title>Er du sikker?</h2>
     <mat-dialog-content>
       <p>Vil du slette “{{ data.overskrift }}”?</p>
@@ -26,6 +26,7 @@ import 'firebase/compat/firestore';
       <button mat-raised-button color="warn" type="button" (click)="dialogRef.close(true)">Slet</button>
     </mat-dialog-actions>
   `,
+    standalone: false
 })
 export class ConfirmDeleteDialogComponent {
   constructor(
@@ -39,9 +40,10 @@ export class ConfirmDeleteDialogComponent {
 /* I denne app bruges danske standdard: date:'dd-MM-YYYY h:mm' */
 
 @Component({
-  selector: 'app-driftsinfo-list',
-  templateUrl: './driftsinfo-list.component.html',
-  styleUrls: ['./driftsinfo-list.component.css'],
+    selector: 'app-driftsinfo-list',
+    templateUrl: './driftsinfo-list.component.html',
+    styleUrls: ['./driftsinfo-list.component.css'],
+    standalone: false
 })
 export class DriftsinfoListComponent implements OnInit {
   @Input()
