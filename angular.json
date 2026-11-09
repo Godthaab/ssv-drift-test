@@ -86,10 +86,10 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "ssv-drift:build:production"
+              "buildTarget": "ssv-drift:build:production"
             },
             "development": {
-              "browserTarget": "ssv-drift:build:development"
+              "buildTarget": "ssv-drift:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -97,7 +97,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ssv-drift:build"
+            "buildTarget": "ssv-drift:build"
           }
         },
         "test": {
