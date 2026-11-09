@@ -3,10 +3,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import {AngularFireAuthModule } from '@angular/fire/compat/auth';
 import {AngularFirestoreModule } from '@angular/fire/compat/firestore';
-import {AngularFireFunctionsModule } from '@angular/fire/compat/functions';
 import {environment} from '../environments/environment';
 import {AngularFireModule} from '@angular/fire/compat';
-import {AngularFireStorageModule} from '@angular/fire/compat/storage';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
@@ -72,9 +70,7 @@ import { DanishDatetimeAdapter, DANISH_DATETIME_FORMATS } from './services/danis
         AppRoutingModule,
         AngularFireModule.initializeApp(environment.firebase),
         AngularFirestoreModule,
-        AngularFireStorageModule,
         AngularFireAuthModule,
-        AngularFireFunctionsModule,
         MtxDatetimepickerModule,
         MtxNativeDatetimeModule], providers: [
         { provide: MAT_DATE_LOCALE, useValue: 'da-DK' },

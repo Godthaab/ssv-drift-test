@@ -4,7 +4,6 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { catchError, concatMap, last, map, take, tap } from 'rxjs/operators';
 import { from, Observable, Subscription, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { AngularFireStorage } from '@angular/fire/compat/storage';
 import firebase from 'firebase/compat/app';
 import Timestamp = firebase.firestore.Timestamp;
 import { DriftsinfoService } from '../services/driftsinfo.service';

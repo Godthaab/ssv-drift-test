@@ -2,13 +2,11 @@ export const environment = {
   production: true,
   useEmulators: false,
   firebase: {
-    apiKey: 'AIzaSyCGa5rQ8hpEsrEJSzAVAwJNRzXFnFCPj6s',
-    authDomain: 'petec-login.firebaseapp.com',
-    databaseURL: 'https://petec-login.firebaseio.com',
-    projectId: 'petec-login',
-    storageBucket: 'petec-login.appspot.com',
-    messagingSenderId: '911817108528',
-    appId: '1:911817108528:web:d66d8aca786324e9e791f5',
+    apiKey: 'AIzaSyCaAJr1uXHgAWYSh4fNN-6BhcLmuv53k-A',
+    authDomain: 'ssv-staging-20261109.firebaseapp.com',
+    projectId: 'ssv-staging-20261109',
+    messagingSenderId: '677001076989',
+    appId: '1:677001076989:web:61a069062e3789509d5e94',
   },
   api: {},
 };
