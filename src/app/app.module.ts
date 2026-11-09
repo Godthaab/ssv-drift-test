@@ -29,7 +29,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {LoginComponent} from './login/login.component';
 import {AppRoutingModule} from './app-routing.module';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import {HttpClientModule} from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import {MatNativeDateModule, MAT_DATE_LOCALE} from '@angular/material/core';
 import { ForsideComponent } from './forside/forside.component';
 import { ConfirmDeleteDialogComponent, DriftsinfoListComponent } from './driftsinfo-list/driftsinfo-list.component';
@@ -38,55 +38,49 @@ import { OpretInfoComponent } from './opret-info/opret-info.component';
 import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule, NgxMatDateAdapter, NGX_MAT_DATE_FORMATS } from '@angular-material-components/datetime-picker';
 import { DanishDatetimeAdapter, DANISH_DATETIME_FORMATS } from './services/danish-datetime-adapter';
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    ForsideComponent,
-    DriftsinfoListComponent,
-    ConfirmDeleteDialogComponent,
-    RetInfoComponent,
-    OpretInfoComponent,
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    MatMenuModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatTabsModule,
-    MatSidenavModule,
-    MatSlideToggleModule,
-    MatListModule,
-    MatToolbarModule,
-    MatInputModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatProgressSpinnerModule,
-    MatProgressBarModule,
-    MatDialogModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    ReactiveFormsModule,
-    AppRoutingModule,
-    HttpClientModule,
-    AngularFireModule.initializeApp(environment.firebase),
-    AngularFirestoreModule,
-    AngularFireStorageModule,
-    AngularFireAuthModule,
-    AngularFireFunctionsModule,
-    NgxMatDatetimePickerModule,
-    NgxMatTimepickerModule,
-    NgxMatNativeDateModule,
-  ],
-  providers: [
-    { provide: MAT_DATE_LOCALE, useValue: 'da-DK' },
-    { provide: NgxMatDateAdapter, useClass: DanishDatetimeAdapter },
-    { provide: NGX_MAT_DATE_FORMATS, useValue: DANISH_DATETIME_FORMATS },
-  ],
-  bootstrap: [AppComponent],
-})
+@NgModule({ declarations: [
+        AppComponent,
+        LoginComponent,
+        ForsideComponent,
+        DriftsinfoListComponent,
+        ConfirmDeleteDialogComponent,
+        RetInfoComponent,
+        OpretInfoComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        BrowserAnimationsModule,
+        MatMenuModule,
+        MatButtonModule,
+        MatIconModule,
+        MatCardModule,
+        MatTabsModule,
+        MatSidenavModule,
+        MatSlideToggleModule,
+        MatListModule,
+        MatToolbarModule,
+        MatInputModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatProgressSpinnerModule,
+        MatProgressBarModule,
+        MatDialogModule,
+        MatSelectModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        ReactiveFormsModule,
+        AppRoutingModule,
+        AngularFireModule.initializeApp(environment.firebase),
+        AngularFirestoreModule,
+        AngularFireStorageModule,
+        AngularFireAuthModule,
+        AngularFireFunctionsModule,
+        NgxMatDatetimePickerModule,
+        NgxMatTimepickerModule,
+        NgxMatNativeDateModule], providers: [
+        { provide: MAT_DATE_LOCALE, useValue: 'da-DK' },
+        { provide: NgxMatDateAdapter, useClass: DanishDatetimeAdapter },
+        { provide: NGX_MAT_DATE_FORMATS, useValue: DANISH_DATETIME_FORMATS },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {}

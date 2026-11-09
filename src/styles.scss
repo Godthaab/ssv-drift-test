@@ -78,10 +78,10 @@ $mat-accent: (
 );
 
 // Define a theme.
-$primary: mat.define-palette($mat-primary);
-$accent:  mat.define-palette($mat-accent, A200, A100, A400);
+$primary: mat.m2-define-palette($mat-primary);
+$accent:  mat.m2-define-palette($mat-accent, A200, A100, A400);
 
-$theme: mat.define-light-theme((color: (primary: $primary, accent: $accent)));
+$theme: mat.m2-define-light-theme((color: (primary: $primary, accent: $accent)));
 
 // Include all theme styles for the components.
 @include mat.all-component-themes($theme);
@@ -156,7 +156,7 @@ app-opret-info {
     }
 
     &:not(.mat-form-field-invalid):not(.mat-form-field-disabled) .mat-form-field-label {
-      color: mat.get-color-from-palette($primary);
+      color: mat.m2-get-color-from-palette($primary);
     }
 
     .mat-form-field-suffix .mat-datepicker-toggle {
@@ -166,7 +166,7 @@ app-opret-info {
         padding: 7px 0;
 
         &:not(:disabled) {
-          color: mat.get-color-from-palette($primary);
+          color: mat.m2-get-color-from-palette($primary);
         }
       }
 
