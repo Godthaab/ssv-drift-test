@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
-import { MAT_LEGACY_DIALOG_DATA, MatLegacyDialogRef } from '@angular/material/legacy-dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { AppModule } from '../app.module';
 import { DriftsinfoService } from '../services/driftsinfo.service';
@@ -21,7 +21,7 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
     aftages: firebase.firestore.Timestamp.fromDate(removed),
   };
   let service: jasmine.SpyObj<DriftsinfoService>;
-  let dialog: jasmine.SpyObj<MatLegacyDialogRef<RetInfoComponent>>;
+  let dialog: jasmine.SpyObj<MatDialogRef<RetInfoComponent>>;
 
   beforeEach(async () => {
     service = jasmine.createSpyObj('DriftsinfoService', ['opdaterInfo', 'createCourse']);
@@ -32,8 +32,8 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
       imports: [AppModule],
       providers: [
         { provide: DriftsinfoService, useValue: service },
-        { provide: MatLegacyDialogRef, useValue: dialog },
-        { provide: MAT_LEGACY_DIALOG_DATA, useValue: record },
+        { provide: MatDialogRef, useValue: dialog },
+        { provide: MAT_DIALOG_DATA, useValue: record },
         { provide: AngularFirestore, useValue: { createId: () => 'test-new' } },
       ],
     }).compileComponents();
@@ -115,7 +115,7 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
 
   it('edits a legacy fixed post without exposing or saving the obsolete visibility switch', () => {
     const legacy = { ...record, visAltid: undefined, publiceres: record.aftages, aftages: record.publiceres };
-    TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, { useValue: legacy });
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: legacy });
     const fixture = TestBed.createComponent(RetInfoComponent);
     fixture.detectChanges();
     const edit = fixture.componentInstance;
@@ -134,7 +134,7 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
   });
 
   it('opens a legacy archived post with the permanent-post choice off', () => {
-    TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, {
+    TestBed.overrideProvider(MAT_DIALOG_DATA, {
       useValue: { ...record, visAltid: undefined, vises: false },
     });
     const edit = TestBed.createComponent(RetInfoComponent).componentInstance;
@@ -148,7 +148,7 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
 
   it('requires a valid range when a legacy message is switched to scheduling', () => {
     const legacy = { ...record, visAltid: undefined, publiceres: record.aftages, aftages: record.publiceres };
-    TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, { useValue: legacy });
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: legacy });
     const edit = TestBed.createComponent(RetInfoComponent).componentInstance;
     edit.form.patchValue({ visAltid: false, aftages: new Date(2026, 9, 17, 14, 35) });
     expect(edit.form.hasError('dateRange')).toBeTrue();
@@ -197,7 +197,7 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
   });
 
   it('requires an expiry date after a permanent post is changed to scheduling', () => {
-    TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, { useValue: { ...record, visAltid: true, aftages: null } });
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: { ...record, visAltid: true, aftages: null } });
     const fixture = TestBed.createComponent(RetInfoComponent);
     fixture.detectChanges();
     const edit = fixture.componentInstance;
@@ -216,7 +216,7 @@ describe('Driftsinformation forms after the Angular/Firebase upgrade', () => {
   });
 
   it('can save edits to a permanent post with no expiry date', () => {
-    TestBed.overrideProvider(MAT_LEGACY_DIALOG_DATA, { useValue: { ...record, visAltid: true, aftages: null } });
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: { ...record, visAltid: true, aftages: null } });
     const edit = TestBed.createComponent(RetInfoComponent).componentInstance;
     edit.form.patchValue({ beskrivelse: 'Ændret tekst' });
     edit.save();

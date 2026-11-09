@@ -4,11 +4,11 @@ import { catchError, filter, switchMap, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { Driftsinfo } from '../model/driftsinfo';
 import {
-  MAT_LEGACY_DIALOG_DATA,
-  MatLegacyDialog as MatDialog,
-  MatLegacyDialogConfig as MatDialogConfig,
-  MatLegacyDialogRef as MatDialogRef,
-} from '@angular/material/legacy-dialog';
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogConfig,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { RetInfoComponent } from '../ret-info/ret-info.component';
 import 'firebase/compat/firestore';
@@ -29,7 +29,7 @@ import 'firebase/compat/firestore';
 })
 export class ConfirmDeleteDialogComponent {
   constructor(
-    @Inject(MAT_LEGACY_DIALOG_DATA) public data: Driftsinfo,
+    @Inject(MAT_DIALOG_DATA) public data: Driftsinfo,
     public dialogRef: MatDialogRef<ConfirmDeleteDialogComponent>
   ) {}
 }

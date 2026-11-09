@@ -9,10 +9,7 @@
 
 // Include non-theme styles for core.
 @include mat.core();
-@include mat.legacy-core();
-// Angular Material 15 no longer includes typography in legacy-core.
-// Apply the shared Roboto type scale to page text and legacy components.
-@include mat.all-legacy-component-typographies();
+@include mat.all-component-typographies();
 
 $mat-primary: (
   50: #e3f2fd,
@@ -87,7 +84,7 @@ $accent:  mat.define-palette($mat-accent, A200, A100, A400);
 $theme: mat.define-light-theme((color: (primary: $primary, accent: $accent)));
 
 // Include all theme styles for the components.
-@include mat.all-legacy-component-themes($theme);
+@include mat.all-component-themes($theme);
 
 // Use the same Roboto and Material Icons fonts as the published drift app.
 // Keep them local so embedded browsers can load them without Google Fonts.
@@ -150,10 +147,10 @@ body {
 // Keep the create/edit forms consistent. Material scales floating labels to 75%.
 app-ret-info,
 app-opret-info {
-  .mat-form-field {
+  .mat-mdc-form-field {
     font-size: 18px;
 
-    .mat-form-field-label {
+    .mat-mdc-floating-label {
       font-size: 20px;
       font-weight: 700;
     }
