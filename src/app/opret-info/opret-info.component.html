@@ -26,7 +26,7 @@
     <mat-form-field>
       <input
         matInput
-        [ngxMatDatetimePicker]="pubPicker"
+        [mtxDatetimepicker]="pubPicker"
         [placeholder]="
           form.controls['visAltid'].value
             ? 'Dato til sortering'
@@ -34,25 +34,25 @@
         "
         formControlName="publiceres"
       />
-      <mat-datepicker-toggle
+      <mtx-datetimepicker-toggle
         matSuffix
         [for]="pubPicker"
-      ></mat-datepicker-toggle>
-      <ngx-mat-datetime-picker #pubPicker></ngx-mat-datetime-picker>
+      ></mtx-datetimepicker-toggle>
+      <mtx-datetimepicker #pubPicker type="datetime"></mtx-datetimepicker>
     </mat-form-field>
     <!-- Aftages -->
     <mat-form-field *ngIf="!form.controls['visAltid'].value">
       <input
         matInput
-        [ngxMatDatetimePicker]="aftagesPicker"
+        [mtxDatetimepicker]="aftagesPicker"
         placeholder="Vælg slut dato & tid"
         formControlName="aftages"
       />
-      <mat-datepicker-toggle
+      <mtx-datetimepicker-toggle
         matSuffix
         [for]="aftagesPicker"
-      ></mat-datepicker-toggle>
-      <ngx-mat-datetime-picker #aftagesPicker></ngx-mat-datetime-picker>
+      ></mtx-datetimepicker-toggle>
+      <mtx-datetimepicker #aftagesPicker type="datetime"></mtx-datetimepicker>
     </mat-form-field>
     <p
       role="alert"

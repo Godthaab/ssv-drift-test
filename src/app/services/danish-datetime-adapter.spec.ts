@@ -1,8 +1,7 @@
-import { Platform } from '@angular/cdk/platform';
 import { DanishDatetimeAdapter, DANISH_DATETIME_FORMATS } from './danish-datetime-adapter';
 
 describe('Danish date and time input', () => {
-  const adapter = new DanishDatetimeAdapter('da-DK', new Platform('browser'));
+  const adapter = new DanishDatetimeAdapter('da-DK');
 
   it('shows and parses the same local time with day before month', () => {
     const date = new Date(2026, 9, 4, 14, 35);

@@ -1,32 +1,34 @@
-import { Inject, Injectable } from '@angular/core';
-import { Platform } from '@angular/cdk/platform';
+import { Inject, Injectable, Optional } from '@angular/core';
 import { MAT_DATE_LOCALE } from '@angular/material/core';
-import {
-  NgxMatNativeDateAdapter, NgxMatDateFormats, NGX_MAT_NATIVE_DATE_FORMATS,
-} from '@angular-material-components/datetime-picker';
+import { MtxDatetimeFormats, MTX_NATIVE_DATETIME_FORMATS, NativeDatetimeAdapter } from '@ng-matero/extensions/core';
 
 const DATE_INPUT = 'danish-date-time';
 
-export const DANISH_DATETIME_FORMATS: NgxMatDateFormats = {
-  parse: { dateInput: DATE_INPUT },
-  display: { ...NGX_MAT_NATIVE_DATE_FORMATS.display, dateInput: DATE_INPUT },
+export const DANISH_DATETIME_FORMATS: MtxDatetimeFormats = {
+  parse: { dateInput: DATE_INPUT, datetimeInput: DATE_INPUT },
+  display: {
+    ...MTX_NATIVE_DATETIME_FORMATS.display,
+    dateInput: DATE_INPUT,
+    datetimeInput: DATE_INPUT,
+  },
 };
 
 @Injectable()
-export class DanishDatetimeAdapter extends NgxMatNativeDateAdapter {
-  constructor(@Inject(MAT_DATE_LOCALE) locale: string, platform: Platform) {
-    super(locale, platform);
+export class DanishDatetimeAdapter extends NativeDatetimeAdapter {
+  constructor(@Optional() @Inject(MAT_DATE_LOCALE) locale: string | null = 'da-DK') {
+    super();
+    this.setLocale(locale || 'da-DK');
   }
 
-  getFirstDayOfWeek(): number { return 1; }
+  override getFirstDayOfWeek(): number { return 1; }
 
-  parse(value: any): Date | null {
+  override parse(value: any, _parseFormat?: any): Date | null {
     if (value instanceof Date) { return this.clone(value); }
-    if (typeof value !== 'string') { return super.parse(value); }
+    if (typeof value !== 'string') { return super.parse(value, _parseFormat); }
     if (!value.trim()) { return null; }
 
     // Native Date.parse ignores the locale and can swap Danish days and months.
-    const match = value.trim().match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})(?:[\s,]+(\d{1,2})[:.](\d{2})(?::(\d{2}))?)?$/);
+    const match = value.trim().match(/^([0-9]{1,2})[-/.]([0-9]{1,2})[-/.]([0-9]{4})(?:[\s,]+([0-9]{1,2})[:.]([0-9]{2})(?::([0-9]{2}))?)?$/);
     if (!match) { return this.invalid(); }
     const [, day, month, year, hour = '0', minute = '0', second = '0'] = match;
     const date = new Date(0);
@@ -38,7 +40,7 @@ export class DanishDatetimeAdapter extends NgxMatNativeDateAdapter {
     return valid ? date : this.invalid();
   }
 
-  format(date: Date, displayFormat: any): string {
+  override format(date: Date, displayFormat: any): string {
     if (displayFormat !== DATE_INPUT || !this.isValid(date)) {
       return super.format(date, displayFormat);
     }

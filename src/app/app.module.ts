@@ -30,12 +30,13 @@ import {LoginComponent} from './login/login.component';
 import {AppRoutingModule} from './app-routing.module';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import {MatNativeDateModule, MAT_DATE_LOCALE} from '@angular/material/core';
+import {MAT_DATE_LOCALE} from '@angular/material/core';
 import { ForsideComponent } from './forside/forside.component';
 import { ConfirmDeleteDialogComponent, DriftsinfoListComponent } from './driftsinfo-list/driftsinfo-list.component';
 import { RetInfoComponent } from './ret-info/ret-info.component';
 import { OpretInfoComponent } from './opret-info/opret-info.component';
-import { NgxMatDatetimePickerModule, NgxMatNativeDateModule, NgxMatTimepickerModule, NgxMatDateAdapter, NGX_MAT_DATE_FORMATS } from '@angular-material-components/datetime-picker';
+import { MtxDatetimepickerModule } from '@ng-matero/extensions/datetimepicker';
+import { DatetimeAdapter, MTX_DATETIME_FORMATS, MtxNativeDatetimeModule } from '@ng-matero/extensions/core';
 import { DanishDatetimeAdapter, DANISH_DATETIME_FORMATS } from './services/danish-datetime-adapter';
 
 @NgModule({ declarations: [
@@ -67,7 +68,6 @@ import { DanishDatetimeAdapter, DANISH_DATETIME_FORMATS } from './services/danis
         MatDialogModule,
         MatSelectModule,
         MatDatepickerModule,
-        MatNativeDateModule,
         ReactiveFormsModule,
         AppRoutingModule,
         AngularFireModule.initializeApp(environment.firebase),
@@ -75,12 +75,11 @@ import { DanishDatetimeAdapter, DANISH_DATETIME_FORMATS } from './services/danis
         AngularFireStorageModule,
         AngularFireAuthModule,
         AngularFireFunctionsModule,
-        NgxMatDatetimePickerModule,
-        NgxMatTimepickerModule,
-        NgxMatNativeDateModule], providers: [
+        MtxDatetimepickerModule,
+        MtxNativeDatetimeModule], providers: [
         { provide: MAT_DATE_LOCALE, useValue: 'da-DK' },
-        { provide: NgxMatDateAdapter, useClass: DanishDatetimeAdapter },
-        { provide: NGX_MAT_DATE_FORMATS, useValue: DANISH_DATETIME_FORMATS },
+        { provide: DatetimeAdapter, useClass: DanishDatetimeAdapter },
+        { provide: MTX_DATETIME_FORMATS, useValue: DANISH_DATETIME_FORMATS },
         provideHttpClient(withInterceptorsFromDi()),
     ] })
 export class AppModule {}
