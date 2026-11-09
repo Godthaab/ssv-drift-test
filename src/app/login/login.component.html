@@ -1,12 +1,24 @@
-
 <div class="login">
-<h2>Stillinge Strands Vandværk</h2>
-  <p style="margin-top: -12px; letter-spacing: 2px;"><b>Driftsinformationer</b></p>
+  <h2>Stillinge Strands Vandværk</h2>
+  <p class="login-subtitle"><b>Driftsinformationer</b></p>
 
-  <div id="firebaseui-auth-container" class="auth-container">
+  <form class="login-form" [formGroup]="form" (ngSubmit)="onLogin()">
+    <mat-form-field appearance="outline">
+      <mat-label>E-mail</mat-label>
+      <input matInput type="email" autocomplete="username" formControlName="email" />
+      <mat-error *ngIf="form.controls.email.hasError('required')">Skriv din e-mailadresse.</mat-error>
+      <mat-error *ngIf="form.controls.email.hasError('email')">Skriv en gyldig e-mailadresse.</mat-error>
+    </mat-form-field>
 
+    <mat-form-field appearance="outline">
+      <mat-label>Adgangskode</mat-label>
+      <input matInput type="password" autocomplete="current-password" formControlName="password" />
+      <mat-error *ngIf="form.controls.password.hasError('required')">Skriv din adgangskode.</mat-error>
+    </mat-form-field>
 
-  </div>
-
+    <p class="login-error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || busy">
+      {{ busy ? 'Logger ind…' : 'Log ind' }}
+    </button>
+  </form>
 </div>
-

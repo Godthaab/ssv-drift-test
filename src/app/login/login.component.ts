@@ -1,51 +1,46 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
-import * as firebaseui from 'firebaseui';
+import { Component } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
 
 @Component({
-    selector: 'login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss'],
-    standalone: false
+  selector: 'login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  standalone: false,
 })
-export class LoginComponent implements OnInit, OnDestroy {
-  ui: firebaseui.auth.AuthUI;
-  private destroyed = false;
+export class LoginComponent {
+  readonly form = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+  });
+  busy = false;
+  errorMessage = '';
 
   constructor(
-    private afAuth: AngularFireAuth,
-    private router: Router,
-    private zone: NgZone
+    private readonly fb: FormBuilder,
+    private readonly afAuth: AngularFireAuth,
+    private readonly router: Router,
   ) {}
 
-  ngOnInit(): void {
-    this.afAuth.app.then((app) => {
-      if (this.destroyed) {
-        return;
-      }
-      const uiConfig: firebaseui.auth.Config = {
-        signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
-        callbacks: {
-          signInSuccessWithAuthResult: () => this.onLoginSuccessful(),
-        },
-      };
-      this.ui = firebaseui.auth.AuthUI.getInstance() ?? new firebaseui.auth.AuthUI(app.auth());
-      this.ui.start('#firebaseui-auth-container', uiConfig);
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.destroyed = true;
-    if (this.ui) {
-      void this.ui.delete();
+  async onLogin(): Promise<void> {
+    if (this.form.invalid || this.busy) {
+      this.form.markAllAsTouched();
+      return;
     }
-  }
 
-  onLoginSuccessful(): boolean {
-    this.zone.run(() => this.router.navigateByUrl('/'));
-    return false;
+    this.busy = true;
+    this.errorMessage = '';
+    const { email, password } = this.form.getRawValue();
+    try {
+      await this.afAuth.signInWithEmailAndPassword(email!, password!);
+      await this.router.navigateByUrl('/');
+    } catch (error: any) {
+      this.errorMessage = error?.code === 'auth/invalid-credential' || error?.code === 'auth/wrong-password'
+        ? 'E-mail eller adgangskode er forkert.'
+        : 'Login mislykkedes. Prøv igen.';
+    } finally {
+      this.busy = false;
+    }
   }
 }
